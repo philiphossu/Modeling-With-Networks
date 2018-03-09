@@ -38,7 +38,7 @@ processFile = function(filepath) {
   return(df)
 }
 
-result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1_testdata.csv")
+result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1data.csv")
 
 colnames(result) <- c("Main/From", "Secondary/To")
 
