@@ -40,7 +40,10 @@ processFile = function(filepath) {
   return(df)
 }
 # Result = data frame of all edges in the graph
-result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1data.csv")
+#Phil's path
+#result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1data.csv")
+#Paolo's path
+result <- processFile("IIT/Junior/Second Semester/MATH380/Modeling-With-Networks/erdos1data.csv")
 colnames(result) <- c("Main/From", "Secondary/To")
 # Loners = Erdos1 collaborators who had no secondary collaborators
 loners <- data.frame(c("RIEGER, GEORG JOHANN", "OBLATH, RICHARD", "FRIED, HANS", "FELDHEIM, ERVIN", "BUSOLINI, DONALD TERENCE", "ANNING, NORMAN H."))
