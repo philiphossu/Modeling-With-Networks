@@ -1,6 +1,8 @@
 # Problem 1
 # Data Source: https://files.oakland.edu/users/grossman/enp/Erdos1.html
 
+library('igraph')
+
 # 511 x 1 column of objects where each object has first attribute of name, second attribute as a list of collaborators
 processFile = function(filepath) {
   # Current Main represents the Erdos1 collaborator
@@ -29,7 +31,7 @@ processFile = function(filepath) {
     } else{
       # Record Erdos2 collaborators and their corresponding main collaborator
       words <- strsplit(line, " ")[[1]]
-      temp <- gsub('[* \"]', '', words)
+      temp <- gsub('[0-9:* \"]+', '', words)
       words <- paste(words <- temp[which(temp != '')], collapse = ' ')
       currentDF <- data.frame(currentMain,words)
       df <- rbind(df,currentDF)
@@ -41,9 +43,9 @@ processFile = function(filepath) {
 }
 # Result = data frame of all edges in the graph
 #Phil's path
-#result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1data.csv")
+result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1data.csv")
 #Paolo's path
-result <- processFile("IIT/Junior/Second Semester/MATH380/Modeling-With-Networks/erdos1data.csv")
+#result <- processFile("IIT/Junior/Second Semester/MATH380/Modeling-With-Networks/erdos1data.csv")
 colnames(result) <- c("Main/From", "Secondary/To")
 # Loners = Erdos1 collaborators who had no secondary collaborators
 loners <- data.frame(c("RIEGER, GEORG JOHANN", "OBLATH, RICHARD", "FRIED, HANS", "FELDHEIM, ERVIN", "BUSOLINI, DONALD TERENCE", "ANNING, NORMAN H."))
@@ -52,6 +54,37 @@ colnames(loners) <- c("Main/From")
 # Should have 511 Erdos1 collaborators
 length(unique(result$`Main/From`))+length(loners$`Main/From`)
 # Check!
+
+uniqueE1People <- unique(result$`Main/From`)
+
+# Now we need to go through our data frame and remove all the edges which are not between Erdos1 authors
+a <- 1
+indicesToRemove <- c()
+for(a in 1:nrow(result)){
+  #print(result[a])
+  if(!(result[a,2] %in% uniqueE1People)){
+    indicesToRemove <- c(indicesToRemove,a)
+  }
+}
+
+# indicesToRemove contains the edges which we don't care about, Erdos2 authors, removing them here
+result <- result[-indicesToRemove,]
+# Obtaining all nodes for creation of the iGraph object
+nodes <- unique(result$`Main/From`)
+
+# Network is our iGraph object to contain the network of Erdos1 authors
+network <- graph_from_data_frame(d=result, vertices=nodes, directed=T) 
+network
+
+# Messy plot
+plot(network, edge.arrow.size=.01,vertex.label=NA,vertex.size=1,margin=0)
+
+# Most important authors with respect to the total degree of each node
+totalDegree <- degree(network, v = V(network), mode = c("all"), loops = TRUE, normalized = FALSE)
+head(sort(totalDegree, decreasing=TRUE))
+
+outDegree <- degree(network, v = V(network), mode = c("out"), loops = TRUE, normalized = FALSE)
+head(sort(outDegree, decreasing=TRUE))
 
 # Problem 2
 
