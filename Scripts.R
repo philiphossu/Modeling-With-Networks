@@ -89,11 +89,16 @@ outDegree <- degree(network, v = V(network), mode = c("out"), loops = TRUE, norm
 head(sort(outDegree, decreasing=TRUE))
 
 # Detecting Cliques in the Network
-networkUnDirected <- graph_from_data_frame(d=result, vertices=nodes, directed=F)# #Making undirected network so this can be tested
+networkUnDirected <- graph_from_data_frame(d=result, vertices=nodes, directed=F) # Making undirected network so this can be tested
 
-cliquesFound <- cliques(networkUnDirected, min = 3, max = NULL)
+cliquesFound <- cliques(networkUnDirected, min = 3, max = NULL) # Found lots of cliques!
 
-biggestCliquesFound <- largest_cliques(networkUnDirected)
+biggestCliquesFound <- largest_cliques(networkUnDirected) # List of the biggest cliques in the network
+
+# Visualizing one of the large cliques
+clique1 <- biggestCliquesFound[[1]]
+cliqueNetwork <- induced.subgraph(graph=networkUnDirected,vids=clique1)
+plot(cliqueNetwork, edge.arrow.size=.01,vertex.size=1,margin=0,layout=layout_in_circle)
 
 # Problem 2
 
