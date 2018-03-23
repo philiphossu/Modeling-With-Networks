@@ -2,6 +2,7 @@
 # Data Source: https://files.oakland.edu/users/grossman/enp/Erdos1.html
 
 library('igraph')
+library(zoom)
 
 # 511 x 1 column of objects where each object has first attribute of name, second attribute as a list of collaborators
 processFile = function(filepath) {
@@ -78,6 +79,7 @@ network
 
 # Messy plot
 plot(network, edge.arrow.size=.01,vertex.label=NA,vertex.size=1,margin=0)
+zm() # Allows us to zoom but still not really usable
 
 # Most important authors with respect to the total degree of each node
 totalDegree <- degree(network, v = V(network), mode = c("all"), loops = TRUE, normalized = FALSE)
@@ -85,6 +87,13 @@ head(sort(totalDegree, decreasing=TRUE))
 
 outDegree <- degree(network, v = V(network), mode = c("out"), loops = TRUE, normalized = FALSE)
 head(sort(outDegree, decreasing=TRUE))
+
+# Detecting Cliques in the Network
+networkUnDirected <- graph_from_data_frame(d=result, vertices=nodes, directed=F)# #Making undirected network so this can be tested
+
+cliquesFound <- cliques(networkUnDirected, min = 3, max = NULL)
+
+biggestCliquesFound <- largest_cliques(networkUnDirected)
 
 # Problem 2
 
