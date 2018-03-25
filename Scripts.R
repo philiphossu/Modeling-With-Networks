@@ -103,24 +103,44 @@ plot(cliqueNetwork, edge.arrow.size=.01,vertex.size=1,margin=0,layout=layout_in_
 # Calculating Centrality Measures
 
 # Betweenness Centrality
-colorRange <- colorRampPalette(c("blue","green","yellow","orange","red"))
 betweennessValues <- betweenness(network)
 sort(betweennessValues)
 
-col <- colorRange(max(betweennessValues)+1)
-col <- col[betweennessValues+1]
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(betweennessValues,breaks=50))]
 
-plot(network, vertex.color=col, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
+plot(network, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
 zm()
 
 # Eigenvector Centrality
 eigenValues <- eigen_centrality(network)$vector
 sort(eigenValues)
 
-col <- colorRange(max(eigenValues)+1)
-col <- col[eigenValues+1]
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(eigenValues,breaks=50))]
 
-plot(network, vertex.color=col, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
+plot(network, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
+zm()
+
+# Closeness Centrality
+# Closeness calculation is not good because of the outliers, remove these and re-calculate
+closenessValues <- closeness(network)
+sort(closenessValues)
+
+pal <- colorRampPalette(c("blue","red"))
+graphCol <- pal(5)[as.numeric(cut(closenessValues,breaks=5))]
+
+plot(network, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(5))
+zm()
+
+# Eccentricity 
+eccentricityValues <- eccentricity(network)
+sort(eccentricityValues)
+
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(500)[as.numeric(cut(eccentricityValues,breaks=500))]
+
+plot(network, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(500))
 zm()
 
 # Problem 2
