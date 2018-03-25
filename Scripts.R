@@ -113,6 +113,15 @@ col <- col[betweennessValues+1]
 plot(network, vertex.color=col, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
 zm()
 
+# Eigenvector Centrality
+eigenValues <- eigen_centrality(network)$vector
+sort(eigenValues)
+
+col <- colorRange(max(eigenValues)+1)
+col <- col[eigenValues+1]
+
+plot(network, vertex.color=col, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
+zm()
 
 # Problem 2
 
