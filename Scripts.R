@@ -100,6 +100,20 @@ clique1 <- biggestCliquesFound[[1]]
 cliqueNetwork <- induced.subgraph(graph=networkUnDirected,vids=clique1)
 plot(cliqueNetwork, edge.arrow.size=.01,vertex.size=1,margin=0,layout=layout_in_circle)
 
+# Calculating Centrality Measures
+
+# Betweenness Centrality
+colorRange <- colorRampPalette(c("blue","green","yellow","orange","red"))
+betweennessValues <- betweenness(network)
+sort(betweennessValues)
+
+col <- colorRange(max(betweennessValues)+1)
+col <- col[betweennessValues+1]
+
+plot(network, vertex.color=col, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
+zm()
+
+
 # Problem 2
 
 # Problem 3
