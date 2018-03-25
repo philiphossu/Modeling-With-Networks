@@ -10,14 +10,13 @@ Completed
 - Calculated eigenvalue centrality for each node in the graph
 - Detected all cliques present in the Erdos1 network
 - Detected all maximum cliques present in the Erdos1 network
-- Created a plot of one of the maximum clique 
+- Created a plot of one of the maximum clique
+- Create interactive plot of eigenvalue centrality 
+- Create interactive plot of closeness centrality
+- Calculate eccentricity 
 
 
 Plans
-- Create interactive plot of eigenvalue centrality 
-- Create interactive plot of closeness centrality
-- Calculate Katz centrality 
-- Calculate eccentricity 
 - Develop an influence metric 
 
 Part 3,4
