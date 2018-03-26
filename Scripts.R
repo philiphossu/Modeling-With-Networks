@@ -85,6 +85,8 @@ zm() # Allows us to zoom but still not really usable
 totalDegree <- degree(network, v = V(network), mode = c("all"), loops = TRUE, normalized = FALSE)
 head(sort(totalDegree, decreasing=TRUE))
 
+hist(totalDegree)
+
 outDegree <- degree(network, v = V(network), mode = c("out"), loops = TRUE, normalized = FALSE)
 head(sort(outDegree, decreasing=TRUE))
 
