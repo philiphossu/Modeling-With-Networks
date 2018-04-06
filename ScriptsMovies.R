@@ -56,3 +56,8 @@ hist(totalDegree)
 eigenValues <- eigen_centrality(actorsNetwork, scale=TRUE)
 sort(eigenValues$vector, decreasing=TRUE)
 
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(eigenValues$vector,breaks=50))]
+
+plot(actorsNetwork, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0)
+zm()
