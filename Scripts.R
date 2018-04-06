@@ -156,11 +156,25 @@ citation_vertices <- read_csv("~/Desktop/School/MATH380/Modeling-With-Networks/C
 cite_network <- graph_from_data_frame(d=citation_edges, vertices=citation_vertices, directed=F) 
 cite_network
 
-c(citation_edges[,1]) %in% citation_vertices[,1]
-
 # Messy plot
-plot(cite_network, edge.arrow.size=.01,vertex.label=NA,vertex.size=1,margin=0)
+plot(cite_network,vertex.label=NA,vertex.size=4,margin=0)
 zm() # Allows us to zoom but still not really usable
+
+# Finding degree of each node
+totalDegree <- degree(cite_network, v = V(cite_network), mode = c("all"), loops = TRUE, normalized = FALSE)
+head(sort(totalDegree, decreasing=TRUE))
+
+# Eigenvector Centrality
+eigenValues <- eigen_centrality(cite_network)$vector
+sort(eigenValues)
+
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(eigenValues,breaks=50))]
+
+plot(cite_network, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0,col=colorRange(50))
+zm()
+
+hist(totalDegree)
 
 # indicesToRemove contains the edges which we don't care about, Erdos2 authors, removing them here
 result <- result[-indicesToRemove,]
