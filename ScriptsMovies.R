@@ -1,5 +1,7 @@
 setwd("IIT/Junior/Second Semester/MATH380/Modeling-With-Networks/")
 
+library('igraph')
+
 #Reading the movie_metadata.csv file
 movieData <- read.csv("movie_metadata.csv")
 
@@ -42,3 +44,15 @@ actorsNetwork
 #graph
 plot(actorsNetwork, edge.arrow.size=.01, vertex.label=NA, vertex.size=1, margin=0)
 zm() # Allows us to zoom but still not really usable
+
+
+# Calculating Centrality Measures
+totalDegree <- degree(actorsNetwork, v = V(actorsNetwork), mode = c("all"), loops = TRUE, normalized = FALSE)
+head(sort(totalDegree, decreasing=TRUE))
+
+hist(totalDegree)
+
+# Eigenvector Centrality
+eigenValues <- eigen_centrality(actorsNetwork, scale=TRUE)
+sort(eigenValues$vector, decreasing=TRUE)
+
