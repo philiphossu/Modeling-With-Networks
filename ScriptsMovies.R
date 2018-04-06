@@ -3,6 +3,8 @@ setwd("IIT/Junior/Second Semester/MATH380/Modeling-With-Networks/")
 #Reading the movie_metadata.csv file
 movieData <- read.csv("movie_metadata.csv")
 
+movieData <- read.csv("~/Desktop/School/Math380/Modeling-With-Networks/movie_metadata.csv")
+
 #Removing duplicate rows
 movieData <- movieData[!duplicated(movieData),]
 
