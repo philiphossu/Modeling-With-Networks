@@ -78,7 +78,7 @@ network <- graph_from_data_frame(d=result, vertices=nodes, directed=T)
 network
 
 # Messy plot
-plot(network, edge.arrow.size=.01,vertex.label=NA,vertex.size=1,margin=0)
+plot(network, edge.arrow.size=.01,vertex.size=1,margin=0)
 zm() # Allows us to zoom but still not really usable
 
 # Most important authors with respect to the total degree of each node
@@ -148,3 +148,23 @@ zm()
 # Problem 2
 
 # Problem 3
+
+# Creating the citation igraph network object
+citation_edges <- read_csv("~/Desktop/School/MATH380/Modeling-With-Networks/Citation.csv")
+citation_vertices <- read_csv("~/Desktop/School/MATH380/Modeling-With-Networks/CitationVertices.csv")
+# citation_vertices <- citation_vertices[,1]
+cite_network <- graph_from_data_frame(d=citation_edges, vertices=citation_vertices, directed=F) 
+cite_network
+
+c(citation_edges[,1]) %in% citation_vertices[,1]
+
+# Messy plot
+plot(cite_network, edge.arrow.size=.01,vertex.label=NA,vertex.size=1,margin=0)
+zm() # Allows us to zoom but still not really usable
+
+# indicesToRemove contains the edges which we don't care about, Erdos2 authors, removing them here
+result <- result[-indicesToRemove,]
+# Obtaining all nodes for creation of the iGraph object
+nodes <- unique(result$`Main/From`)
+
+
