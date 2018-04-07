@@ -1,0 +1,65 @@
+---
+title: "Modeling With Networks"
+output: pdf_document
+author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
+header-includes:
+   - \usepackage{bbm}
+   - \usepackage{tikz}
+   - \usetikzlibrary{arrows}
+   - \usetikzlibrary{positioning}
+   - \usepackage{amsmath}
+   - \usepackage{multirow}
+   - \usepackage{algpseudocode}
+---
+\allowdisplaybreaks
+
+## 1. Introduction
+
+Graphs are some of the most versatile and interesting structures in mathematics. A graph G is characterized as an ordered pair of vertices and edges, $G=(V(G),E(G))$. The edges in a graph imply the existence of a relationship between two vertices or objects. They can be directed (implying a relationship based on ordering) or undirected where the edges have no orientation. Edges can also be weighted, having several real world applications like distance, cost, etc. These structures evidently can represent countless applications which have discrete and related objects. A simple graph is shown below.
+
+\tikzset{main node/.style={circle,draw,minimum size=1.25cm,inner sep=1pt},
+color1/.style={circle,draw,minimum size=1cm,inner sep=1pt,fill = red!35},
+color2/.style={circle,draw,minimum size=1cm,inner sep=1pt,fill = blue!35},
+color3/.style={circle,draw,minimum size=1cm,inner sep=1pt,fill = green!35}}
+\begin{center}
+\begin{tikzpicture}
+
+  \node[color1] (1) {1};
+  \node[color2] (2) [above right = 0.5cm and 1cm of 1] {2};
+  \node[color3] (3) [below = 1.5cm of 2] {3};
+  \node[color1] (4) [right = 0.5cm of 2] {4};
+
+ \path[draw,thick]
+    (1) edge node {} (2)
+    (1) edge node {} (3)
+    (2) edge node {} (3)
+    (3) edge node {} (4)
+    (2) edge node {} (4);
+    
+\end{tikzpicture}
+\end{center}
+In the following project report, we analyze how influence can be determined in a graph and describe our exploration into mathematical modeling with networks. There exist several known measures to explore the importance of a vertex in a graph, including degree centrality, betweenness centrality, etc. We seek to combine real world scenarios with some of these mathematical ideas to accurately describe the concept of influence in graphs.
+
+The prompt asked us to consider a number of specific tasks, briefly outlined below:
+
+- Build and analyze the Erdos1 co-author network using the data from https://files.oakland.edu/users/grossman/enp/Erdos1.html. The Erdos1 co-author network is characterized by the authors who have collaborated with the famous mathematician, Paul Erdos. Rather than including every entry in this data file, we were asked to consider a network where each author has collaborated directly with Erdos (omitting Erdos himself). After building this network, we are asked to explore the graph and find some interesting features and properties. 
+
+- Define and study two critical measurements by which to determine the influence of authors in the network we created in part a. 
+
+- Gather data, build, and analyze a network showing the relationship between some foundational papers in the emerging field of network science. Apply the influence measures used for parts a,b and discuss their effectiveness. Also, discuss methodology and other factors surrounding this network. 
+
+- Gather data, build, and analyze a real life scenario which can be modeled as a network. Again apply influence measures and discuss the results, shortcomings, external factors, etc..
+
+- Discuss how influence and impact can be used in real life situations. Consider business decisions, improving influence, selecting a graduate school etc. 
+
+To address the above tasks, we utilized the R programming language and our knowledge from various math and computer science courses. 
+
+## 2. Statement and Analysis of the Problem
+
+## 3. Description of the Model
+## 4. Analysis and Testing of the Model
+## 5. Results and Quality of Model
+## 6. References
+## 7. Appendix
+
+
