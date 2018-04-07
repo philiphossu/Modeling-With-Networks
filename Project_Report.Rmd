@@ -2,6 +2,7 @@
 title: "Modeling With Networks"
 output: pdf_document
 author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
+date: \today
 header-includes:
    - \usepackage{bbm}
    - \usepackage{tikz}
@@ -15,30 +16,40 @@ header-includes:
 
 ## 1. Introduction
 
-Graphs are some of the most versatile and interesting structures in mathematics. A graph G is characterized as an ordered pair of vertices and edges, $G=(V(G),E(G))$. The edges in a graph imply the existence of a relationship between two vertices or objects. They can be directed (implying a relationship based on ordering) or undirected where the edges have no orientation. Edges can also be weighted, having several real world applications like distance, cost, etc. These structures evidently can represent countless applications which have discrete and related objects. A simple graph is shown below.
+Graphs are some of the most versatile and interesting structures in mathematics. A graph G is characterized as an ordered pair of vertices and edges, $G=(V(G),E(G))$. The edges in a graph imply the existence of a relationship between two vertices or objects. They can be directed (implying a relationship based on ordering) or undirected where the edges have no orientation. Edges can also be weighted, having several real world applications like distance, cost, etc. These structures evidently can represent countless applications which have discrete and related objects. A simple graph which will operate as our running example is shown below.
 
 \tikzset{main node/.style={circle,draw,minimum size=1.25cm,inner sep=1pt},
-color1/.style={circle,draw,minimum size=1cm,inner sep=1pt,fill = red!35},
-color2/.style={circle,draw,minimum size=1cm,inner sep=1pt,fill = blue!35},
-color3/.style={circle,draw,minimum size=1cm,inner sep=1pt,fill = green!35}}
+color2/.style={circle,draw,minimum size=0.65cm,inner sep=1pt,fill = blue!35}}
 \begin{center}
 \begin{tikzpicture}
 
-  \node[color1] (1) {1};
-  \node[color2] (2) [above right = 0.5cm and 1cm of 1] {2};
-  \node[color3] (3) [below = 1.5cm of 2] {3};
-  \node[color1] (4) [right = 0.5cm of 2] {4};
+  \node[color2] (1) {A};
+  \node[color2] (3) [right = 1cm of 1] {C};
+  \node[color2] (2) [above = 0.25cm of 3] {B};
+  \node[color2] (4) [below = 0.25cm of 3] {D};
+  \node[color2] (5) [right = 1cm of 3] {E};
+  \node[color2] (7) [right = 1cm of 5] {G};
+  \node[color2] (6) [above = 0.25cm of 7] {F};
+  \node[color2] (8) [below = 0.25cm of 7] {H};
+  \node[color2] (9) [right = 1cm of 7] {I};
 
  \path[draw,thick]
     (1) edge node {} (2)
     (1) edge node {} (3)
-    (2) edge node {} (3)
     (3) edge node {} (4)
-    (2) edge node {} (4);
+    (3) edge node {} (2)
+    (3) edge node {} (5)
+    (6) edge node {} (7)
+    (7) edge node {} (8)
+    (7) edge node {} (9)
+    (5) edge node {} (7);
     
 \end{tikzpicture}
 \end{center}
-In the following project report, we analyze how influence can be determined in a graph and describe our exploration into mathematical modeling with networks. There exist several known measures to explore the importance of a vertex in a graph, including degree centrality, betweenness centrality, etc. We seek to combine real world scenarios with some of these mathematical ideas to accurately describe the concept of influence in graphs.
+
+Influence is the capacity to produce an effect in indirect or intangible ways. If one wants to be successful in their field, they must share their ideas and persuade their peers to accept them. This idea is present in all types of industries and specializations. A significant portion of this project focuses on the widespread influence of a famous mathematician, Paul Erdos, and his large co-author network.
+
+In the following project report, we analyze how influence can be determined in a graph and describe our exploration into mathematical modeling with networks. There exist several known measures to explore the importance of a vertex in a graph, including degree centrality, betweenness centrality, etc. We will model various networks, analyze them, find who/what has the most influence in the network, and the reasons behind this result. We seek to combine real world scenarios with some of these mathematical ideas to accurately describe the concept of influence in graphs. Furthermore we will argue how these methods can show steps to rapidly boost ones own influence.
 
 The prompt asked us to consider a number of specific tasks, briefly outlined below:
 
@@ -55,6 +66,15 @@ The prompt asked us to consider a number of specific tasks, briefly outlined bel
 To address the above tasks, we utilized the R programming language and our knowledge from various math and computer science courses. 
 
 ## 2. Statement and Analysis of the Problem
+While our project does have a number of specific requirements discussed in the introduction, essentially the problem we are trying to approach is how to measure the influence of a node within a network. We define two influence measures to address this problem, discussed in depth in the latter sections. Once these are defined, we are tasked with collecting and cleaning data, creating multiple networks, and analyzing these networks under our two metrics. 
+
+While the field of graph theory is certainly not young, we noticed a wealth of more recent works geared towards our topic and general social network analysis. We began by finding a modern survey of various graph centrality measures, notably the work by Bloch, et al. titled \textit{Centrality Measures in Networks} [NUMBER]. Rather than focusing on a concrete example, this work provides a much needed overview of several fundamental graph measurements and their properties. 
+
+Another work which we used to help shape our understanding of the problem was the comment released by Vishesh Karwa and Sonja Petrovic titled \textit{Coauthorship and citation networks for statisticians} [NUMBER]. This paper looks directly at how co-author networks and citation networks can be analyzed which is very relevant to our project. Regrettably, the networks which Karwa and Petrovic are commenting on are somewhat more advanced than the networks we were able to make. Consequently, their analysis is more advanced. As we will discuss, our Erdos1 co-author network is slightly oversimplified. An edge in our network simply implies the presence of these two authors collaborating at least once, but the exact number is unknown. Regardless, we were able to take a number of pointers from this paper. For a complex network, the paper suggests that a metric like counting the degree of each node is far too simple. For our simple network, such a measure may be more appropriate. 
+
+A number of publications also exist which detail analyses of specific co-author networks. One such work is \textit{Co-authorship and citation networks in Spanish history of science research} by Osca-Lluch, et al [NUMBER]. The authors data allows them to look at papers published by various journals, number of papers published by Spanish scientists over time, types of publications, etc. While we did not have this type of data readily accessible, the paper also looks at co-author collaboration and the impact of these publications. The paper interestingly notes that a very high percentage of authors have no collaboration whatsoever. They create a visualization of their graph where the edge thicknesses represent number of collaborations. To analyze the publication impact, the authors weigh in on using a quantative measurement vs a qualitative one. They argue that a qualitative approach can be effective due to its ability to take into consideration the expertise, reach, and prestige apart from the publishing journal. 
+
+Despite that our networks were based on much more simple data sets, it was interesting and useful to see how others have approached similar analyses of co-author and citation networks.  
 
 ## 3. Description of the Model
 ## 4. Analysis and Testing of the Model
