@@ -11,6 +11,7 @@ header-includes:
    - \usepackage{amsmath}
    - \usepackage{multirow}
    - \usepackage{algpseudocode}
+   - \usepackage{blkarray}
 ---
 \allowdisplaybreaks
 
@@ -68,11 +69,11 @@ To address the above tasks, we utilized the R programming language and our knowl
 ## 2. Statement and Analysis of the Problem
 While our project does have a number of specific requirements discussed in the introduction, essentially the problem we are trying to approach is how to measure and interpret the influence of a vertex within a network. We define two influence measures to address this problem, discussed in depth in the latter sections. Once these are defined, we are collect and clean multiple data sets, create multiple networks, and analyze these networks under our two metrics.
 
-While the field of graph theory is certainly not young, we noticed a wealth of more recent works geared towards our topic and general social network analysis. We began by finding a modern survey of various graph centrality measures, notably the work by Bloch, et al. titled \textit{Centrality Measures in Networks} [CITE]. Rather than focusing on a concrete example, this work provides a much needed overview of several fundamental graph measurements and their properties. This publication helped us determine what different types of graph metrics exist and how they are calculated. This was not the only publication which we considered to help us learn about various graph metrics. The work by Santiago Segarra and Alejandro Ribeiro titled Stability and Continuity of Centrality Measures in Weighted Graphs gave us an insight into some of the advantages and disadvantages of metrics like Eigenvector centrality and Betweenness centrality [CITE].
+While the field of graph theory is certainly not young, we noticed a wealth of more recent works geared towards our topic and general social network analysis. We began by finding a modern survey of various graph centrality measures, notably the work by Bloch, et al. titled \textit{Centrality Measures in Networks} [CITE]. Rather than focusing on a concrete example, this work provides a much needed overview of several fundamental graph measurements and their properties. This publication helped us determine what different types of graph metrics exist and how they are calculated. This was not the only publication which we considered to help us learn about various graph metrics. The work by Santiago Segarra and Alejandro Ribeiro titled \textit{Stability and Continuity of Centrality Measures in Weighted Graphs} gave us an insight into some of the advantages and disadvantages of metrics like Eigenvector centrality and Betweenness centrality [CITE].
 
-Another work which we used to help shape our understanding of the problem was the comment released by Vishesh Karwa and Sonja Petrovic titled \textit{Coauthorship and citation networks for statisticians} [CITE]. This paper looks directly at how co-author networks and citation networks can be analyzed which is very relevant to our project. Regrettably, the networks and paper which Karwa and Petrovic are commenting on are more advanced than what we are able to make. Consequently, their analysis is also more advanced. As we will discuss, our Erdos1 co-author network is slightly oversimplified. An edge in our network simply implies the presence of these two authors collaborating at least once, but the exact number is unknown. We are able to give no weight to these edges since our data set simply shows some form of collaboration. Regardless, we were able to take a number of pointers from this paper. For a complex network, the paper suggests that a metric like counting the degree of each node is far too simple. For our simple network, such a measure may be more appropriate. 
+Another work which we used to help shape our understanding of the problem was the comment released by Vishesh Karwa and Sonja Petrovic titled \textit{Coauthorship and citation networks for statisticians} [CITE]. This paper looks directly at how co-author networks and citation networks can be analyzed which is very relevant to our project. Regrettably, the networks and paper which Karwa and Petrovic are commenting on are more advanced than what we are able to make. Consequently, their analysis is also more advanced. As we will discuss, our Erdos1 co-author network is slightly oversimplified. An edge in our network simply implies the presence of these two authors collaborating at least once, but the exact number is unknown. We not able to give weights to our edges since our data set simply shows some form of collaboration. Regardless, we were able to take a number of pointers from this paper. For a complex network, the paper suggests that a metric like counting the degree of each node is far too simple. For our simple network, such a measure may be more appropriate. 
 
-A number of publications also exist which detail analyses of specific co-author networks. One such work is \textit{Co-authorship and citation networks in Spanish history of science research} by Osca-Lluch, et al [CITE]. The authors data allows them to look at papers published by various journals, number of papers published by Spanish scientists over time, types of publications, etc. While we did not have this type of data readily accessible, the paper also looks at co-author collaboration and the impact of these publications. The paper interestingly notes that a very high percentage of authors have no collaboration whatsoever. They create a visualization of their graph where the edge thicknesses represent number of collaborations. To analyze the publication impact, the authors weigh in on using a quantitative measurement vs a qualitative one. They argue that a qualitative approach can be effective due to its ability to take into consideration the expertise, reach, and prestige apart from the publishing journal. 
+A number of publications also exist which analyze specific co-author networks. One such work is \textit{Co-authorship and citation networks in Spanish history of science research} by Osca-Lluch, et al [CITE]. The authors data allows them to look at papers published by various journals, number of papers published by Spanish scientists over time, types of publications, etc. While we did not have this type of data readily accessible, the paper also looks at co-author collaboration and the impact of these publications. The paper interestingly notes that a very high percentage of authors have no collaboration whatsoever. They create a visualization of their graph where the edge thicknesses represent number of collaborations. To analyze the publication impact, the authors weigh in on using a quantitative measurement vs a qualitative one. They argue that a qualitative approach can be effective due to its ability to take into consideration the expertise, reach, and prestige of a researcher and their publication separately from the publishing journal. 
 
 Despite that our networks were based on much more simple data sets, it was interesting and useful to see how others have approached similar analyses of co-author and citation networks. This problem is not totally novel, but it's apparently getting increasing amount of attention in recent years, as we were able to find several publications referencing co-author and citation networks in the last 10 to 15 years. 
 
@@ -82,7 +83,9 @@ We selected two primary metrics by which to determine influence in a graph. Whil
 ###3.1 Total Degree
 The degree of a vertex v, commonly denoted $deg(v)$, represents the number of edges incident to the vertex. This calculation can vary slightly depending on if the graph is directed or undirected. For the purpose of our application, we choose to define our measurement to be the total degree of a vertex, where total degree is defined as follows:
 
-For a directed graph $G=(V(G),(E(V))$, Total Degree of a vertex v = $\sum\limits_{}edges \ in \ (v) + \sum\limits_{}edges \ out \ (v)$ where edges in (v) represents the incident edges directed into a vertex v and edges out (v) represents the incident edges directed out of the vertex v. For an undirected graph, the Total Degree of a vertex v is simply $\sum\limits_{}edges \ incident \ to \ (v)$. 
+For a directed graph $G=(V(G),(E(V))$, Total Degree of a vertex v = $\sum\limits_{}edges \ in \ (v) + \sum\limits_{}edges \ out \ (v)$ where edges in (v) represents the incident edges directed into a vertex v and edges out (v) represents the incident edges directed out of the vertex v. 
+
+For an undirected graph, the Total Degree of a vertex v is simply $\sum\limits_{}edges \ incident \ to \ (v)$. 
 
 We show an example calculation of the total degree of each node in a simple graph below. Note that the degree of each vertex is written inside the vertex next to the label. 
 
@@ -115,17 +118,68 @@ We show an example calculation of the total degree of each node in a simple grap
 
 By the total degree metric, we would say that the most important/influential vertices in this graph would be C and G, each having a degree of 4. These vertices have the most direct connections to the other vertices in the network.
 
-We selected this metric due to its simplicity and relevance in the example networks which we will consider. More reasoning will be present in the sections which follow, but a subset is mentioned here. The first network which we will analyze, the Erdos1 co-author network, is a simple undirected network which shows authors who have collaborated with the mathematician Paul Erdos. We can apply the total degree metric to help us determine influence of authors in this network because more collaborators will imply that an author has more influence. If a vertex (representing an author) has a higher degree, we could assume that their works are more diverse and their influence is greater. The second network which we will analyze, the citation network, is a directed network which shows academic papers which have cited each other. Our metric will also be relevant in this scenario, as a paper which has a higher degree will mean that more papers have cited it, making it more influential. The third network is a movie/actors network. Total degree has a solid meaning here too, as more connections (edges) will imply that the actor has worked with a larger number of other actors, meaning that they have more of an influence in their industry. 
+Another way to visualize this graph and consider the degree of each vertex is via an adjacency matrix. This is a V x V matrix where the value of each entry denotes the presence or absence of an edge between the two corresponding vertices. The value in each entry can be modified to contain the edge weight, but this is not applicable in the networks we are analyzing. The corresponding adjacency matrix for our running example is shown below. 
+
+\[
+\begin{blockarray}{cccccccccc}
+A & B & C & D & E & F & G & H & I \\
+\begin{block}{(ccccccccc)c}
+  0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & A \\
+  1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & B \\
+  1 & 1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & C \\
+  0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & D \\
+  0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & E \\
+  0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & F \\
+  0 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 1 & G \\
+  0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & H \\
+  0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & I \\
+\end{block}
+\end{blockarray}
+\]
+
+From this adjacency matrix, we can confirm the total degree counts of each vertex. Looking at vertex G for example, taking the summation of the G row and G column both yield the degree of 4 which we were previously able to calculate visually. In a directed graph, a similar approach can be taken but accounting for the fact that the matrix would no longer be symmetric about the main diagonal. 
+
+We selected the total degree metric metric due to its simplicity and relevance in the example networks which we will consider. More reasoning will be present in the sections which follow, but a subset is mentioned here. The first network which we will analyze, the Erdos1 co-author network, is a simple undirected network which shows authors who have collaborated with the mathematician Paul Erdos. We can apply the total degree metric to help us determine influence of authors in this network because more collaborators will imply that an author has more influence. If a vertex (representing an author) has a higher degree, we could assume that their works are more diverse and their influence is greater. The second network which we will analyze, the citation network, is a directed network which shows academic papers which have cited each other. Our metric will also be relevant in this scenario, as a paper which has a higher degree will mean that more papers have cited it, making it more influential. The third network is a movie/actors network. Total degree has a solid meaning here too, as more connections (edges) will imply that the actor has worked with a larger number of other actors, meaning that they have more of an influence in their industry. 
 
 ###3.2 Eigenvector Centrality
 The eigenvector centrality of a vertex in network is a more advanced measurement which can help determine influence of a vertex. While this measurement also suggests that the importance of a vertex depends on the vertices it is directly connected to, it adds a layer of complexity. Rather than just considering the number of incident edges to a vertex, eigenvector centrality suggests that the importance of a vertex is relative to the importance of the vertices it is connected with [CITE]. 
 
-Given a graph $G=(V(G),(E(V))$ the adjacency matrix A for this graph is a V by V matrix. Every entry in this matrix is zero unless there exists an edge between the two corresponding vertices. In that case, the value of the entry is equal to the edge weight between the two vertices (commonly 1). Given these brief definitions, the eigenvector centrality is then defined as follows [NUMBER]:
+This metric is based on the general eigenvector problem, defined as follows: The eigenvalues and eigenvectors of a square mxm matrix are the scalar values $\lambda$ and vectors $\bf x$ respectively that are the solutions to:
 
-$$\sum_{n=1}^{\infty} 2^{-n} = 1$$
+$$A\bf x=\lambda \bf x$$
+Now, applying this problem specifically to graph centrality, the eigenvector centrality is defined as follows: Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, the score of a vertex $X_v$ is calculated as follows with M(v) representing the set of neighbors of the vertex v $\in V(G)$. The specific value of lambda can be calculated via power iteration. 
 
+$$ X_v = 1/\lambda \sum_{t\in M(v)}^{\infty} X_t$$
 
+We utilize the igraph package in R which provides an easy to use interface through which to perform this calculation. The following code block demonstrates the calculation using igraph.
 
+```{r message=FALSE, fig.align="center"}
+# Loading Package
+library('igraph') 
+# Creating edge list, vertex list
+example_edges <- data.frame(x=c("A","A","B","C","C","E","G","G","G"),
+                    y=c("B","C","C","D","E","G","F","I","H"))
+example_vertices <- data.frame(x=c("A","B","C","D","E","F","G","H","I"))
+# Generating network
+net <- graph_from_data_frame(d=example_edges, vertices=example_vertices, directed=F) 
+# Plotting network
+plot(net,vertex.size=20,margin=0,edge.arrow.size=0.3,vertex.color="gray75")
+# Calculate Eigenvector Centrality of each Vertex
+EGvals <- eigen_centrality(net)$vector
+sort(EGvals, decreasing=TRUE)
+
+```
+
+Eigenvector centrality has several advantages over using a more simple approach like the total degree of a vertex. A vertex having many incident edges doesn't necessarily have a higher eigenvector centrality, which differs from total degree centrality and more accurately measures the importance (influence) of nodes. 
+
+The primary disadvantage with Eigenvector centrality is that it's geared towards undirected graphs which consequently have symmetric adjacency matrices. Eigenvector centrality is very applicable to our undirected network scenarios like the Erdos1 network and the movie/actor network. However, when it comes to the citation network, we will use a third metric to determine the influence of a node. [CITE]
+
+###3.3 Alpha Centrality
+Alpha centrality is an advancement to Eigenvector centrality to allow the metric to be applied to directed graphs which have asymmetric adjacency matrices. Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, alpha centrality is defined as follows where e is the importance given to a vertex and alpha is a constant: 
+
+$$x = (I-\alpha^T)^{-1}e $$
+
+Alpha centrality starts by giving every vertex a starting, random positive amount of influence. Each node splits its influence evenly and divides it amongst its outward neighbors, receieving from its inward neighbors. This process repeats until the graph reaches a steady state, perhaps through power iteration. 
 
 ## 4. Analysis and Testing of the Model
 ## 5. Results and Quality of Model
@@ -136,6 +190,8 @@ Paper about calculating eigenvector centrality, why this measurement is stable, 
 Paper with a whole bunch of graph metrics and explanation about them: https://arxiv.org/pdf/1608.05845.pdf
 Paper about analyzing a co-author network of Spanish scientists: https://link.springer.com/article/10.1007/s11192-008-2089-5
 Paper with IIT author regarding co-author and citation networks: https://arxiv.org/pdf/1608.06667.pdf 
+Paper about why eigenvector is not good for directed and definition of alpha centrality
+http://www.leonidzhukov.net/hse/2016/networks/papers/bonacich2001.pdf 
 
 ## 7. Appendix
 
