@@ -1,6 +1,6 @@
 ---
 title: "An Investigation Into Modeling With Networks"
-subtitle: "Math380 Spring 2018 Project"
+subtitle: "Math380 Spring 2018 Project - Code available at https://github.com/philiphossu/Modeling-With-Networks"
 output: pdf_document
 author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
 date: \today
@@ -15,7 +15,6 @@ header-includes:
    - \usepackage{blkarray}
    - \usepackage{esvect}
 geometry: margin=1in
-fontfamily: mathpazo
 fontsize: 11pt
 ---
 \allowdisplaybreaks
@@ -171,7 +170,7 @@ example_edges <- data.frame(x=c("A","A","B","C","C","E","G","G","G"),
                     y=c("B","C","C","D","E","G","F","I","H"))
 example_vertices <- data.frame(x=c("A","B","C","D","E","F","G","H","I"))
 # Generating network
-net <- graph_from_data_frame(d=example_edges, vertices=example_vertices, directed=F) 
+net <- graph_from_data_frame(d=example_edges,vertices=example_vertices,directed=F) 
 # Plotting network
 plot(net,vertex.size=20,margin=0,edge.arrow.size=0.3,vertex.color="gray75")
 # Calculate Eigenvector Centrality of each Vertex
@@ -180,7 +179,7 @@ sort(EGvals, decreasing=TRUE)
 
 ```
 
-Eigenvector centrality has several advantages over using a more simple approach like the total degree of a vertex. A vertex having many incident edges doesn't necessarily have a higher eigenvector centrality, which differs from total degree centrality and more accurately measures the importance (influence) of nodes. 
+Eigenvector centrality has several advantages over using a more simple approach like the total degree of a vertex. A vertex having many incident edges doesn't necessarily have a higher eigenvector centrality, which differs from total degree centrality and more accurately measures the importance (influence) of nodes. We can see in the above example that using eigenvector centrality, the importance of the nodes is quite different from the counting degrees approach. Even though vertices D and H both have degree 1, eigenvector centrality acknowledges that D is the more important vertex because it's connected to C which is is also a more important vertex in the graph. Eigenvector centrality recognizes that vertices in an interconnected component are more important than vertices which are weakly connected. We also see that even though E has a degree of 2 compared with the degree 4 of G, eigenvector centrality finds E to be the more important vertex because it acts as a crucial bridge between the two pieces of the graph.   
 
 The primary disadvantage with Eigenvector centrality is that it's geared towards undirected graphs which consequently have symmetric adjacency matrices. Eigenvector centrality is very applicable to our undirected network scenarios like the Erdos1 network and the movie/actor network. However, when it comes to the citation network, we will use a third metric to determine the influence of a node. [CITE]
 
