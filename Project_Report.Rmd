@@ -1,5 +1,6 @@
 ---
-title: "Modeling With Networks"
+title: "An Investigation Into Modeling With Networks"
+subtitle: "Math380 Spring 2018 Project"
 output: pdf_document
 author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
 date: \today
@@ -12,8 +13,17 @@ header-includes:
    - \usepackage{multirow}
    - \usepackage{algpseudocode}
    - \usepackage{blkarray}
+   - \usepackage{esvect}
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
 ---
 \allowdisplaybreaks
+
+
+*************************
+
+\newpage
 
 ## 1. Introduction
 
@@ -146,7 +156,7 @@ The eigenvector centrality of a vertex in network is a more advanced measurement
 
 This metric is based on the general eigenvector problem, defined as follows: The eigenvalues and eigenvectors of a square mxm matrix are the scalar values $\lambda$ and vectors $\bf x$ respectively that are the solutions to:
 
-$$A\bf x=\lambda \bf x$$
+$$A \vv{x}= \lambda \vv{x}$$
 Now, applying this problem specifically to graph centrality, the eigenvector centrality is defined as follows: Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, the score of a vertex $X_v$ is calculated as follows with M(v) representing the set of neighbors of the vertex v $\in V(G)$. The specific value of lambda can be calculated via power iteration. 
 
 $$ X_v = 1/\lambda \sum_{t\in M(v)}^{\infty} X_t$$
@@ -187,11 +197,16 @@ Alpha centrality starts by giving every vertex a starting, random positive amoun
 To be completed at a later time: (APA)
 
 Paper about calculating eigenvector centrality, why this measurement is stable, etc: https://arxiv.org/pdf/1410.5119.pdf
+
 Paper with a whole bunch of graph metrics and explanation about them: https://arxiv.org/pdf/1608.05845.pdf
+
 Paper about analyzing a co-author network of Spanish scientists: https://link.springer.com/article/10.1007/s11192-008-2089-5
+
 Paper with IIT author regarding co-author and citation networks: https://arxiv.org/pdf/1608.06667.pdf 
+
 Paper about why eigenvector is not good for directed and definition of alpha centrality
 http://www.leonidzhukov.net/hse/2016/networks/papers/bonacich2001.pdf 
+
 
 ## 7. Appendix
 
