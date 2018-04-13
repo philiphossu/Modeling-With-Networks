@@ -15,7 +15,7 @@ header-includes:
    - \usepackage{blkarray}
    - \usepackage{esvect}
 geometry: margin=1in
-fontsize: 11pt
+fontsize: 12pt
 ---
 \allowdisplaybreaks
 
@@ -148,17 +148,17 @@ A & B & C & D & E & F & G & H & I \\
 
 From this adjacency matrix, we can confirm the total degree counts of each vertex. Looking at vertex G for example, taking the summation of the G row and G column both yield the degree of 4 which we were previously able to calculate visually. In a directed graph, a similar approach can be taken but accounting for the fact that the matrix would no longer be symmetric about the main diagonal. 
 
-We selected the total degree metric metric due to its simplicity and relevance in the example networks which we will consider. More reasoning will be present in the sections which follow, but a subset is mentioned here. The first network which we will analyze, the Erdos1 co-author network, is a simple undirected network which shows authors who have collaborated with the mathematician Paul Erdos. We can apply the total degree metric to help us determine influence of authors in this network because more collaborators will imply that an author has more influence. If a vertex (representing an author) has a higher degree, we could assume that their works are more diverse and their influence is greater. The second network which we will analyze, the citation network, is a directed network which shows academic papers which have cited each other. Our metric will also be relevant in this scenario, as a paper which has a higher degree will mean that more papers have cited it, making it more influential. The third network is a movie/actors network. Total degree has a solid meaning here too, as more connections (edges) will imply that the actor has worked with a larger number of other actors, meaning that they have more of an influence in their industry. 
+We selected the total degree metric metric due to its simplicity and relevance in the example networks which we will consider. However, this metric doesn't always give a full picture of the influence in a network. 
 
 ###3.2 Eigenvector Centrality
-The eigenvector centrality of a vertex in network is a more advanced measurement which can help determine influence of a vertex. While this measurement also suggests that the importance of a vertex depends on the vertices it is directly connected to, it adds a layer of complexity. Rather than just considering the number of incident edges to a vertex, eigenvector centrality suggests that the importance of a vertex is relative to the importance of the vertices it is connected with [CITE]. 
+The eigenvector centrality of a vertex in network is a more advanced measurement which can help determine influence of a vertex. While this measurement also suggests that the importance of a vertex depends on the vertices it is directly connected to, it adds a layer of complexity. Rather than considering the number of incident edges to a vertex, eigenvector centrality suggests that the importance of a vertex is relative to the importance of the vertices it is connected with [CITE]. 
 
-This metric is based on the general eigenvector problem, defined as follows: The eigenvalues and eigenvectors of a square mxm matrix are the scalar values $\lambda$ and vectors $\bf x$ respectively that are the solutions to:
+This metric is based on the general eigenvector problem, defined as follows: The eigenvalues and eigenvectors of a square mxm matrix are the scalar values $\lambda$ and vectors $\vv{x}$ respectively that are the solutions to:
 
 $$A \vv{x}= \lambda \vv{x}$$
 Now, applying this problem specifically to graph centrality, the eigenvector centrality is defined as follows: Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, the score of a vertex $X_v$ is calculated as follows with M(v) representing the set of neighbors of the vertex v $\in V(G)$. The specific value of lambda can be calculated via power iteration. 
 
-$$ X_v = 1/\lambda \sum_{t\in M(v)}^{\infty} X_t$$
+$$ X_v = 1/\lambda \sum_{t\in M(v)} X_t$$
 
 We utilize the igraph package in R which provides an easy to use interface through which to perform this calculation. The following code block demonstrates the calculation using igraph.
 
@@ -170,7 +170,8 @@ example_edges <- data.frame(x=c("A","A","B","C","C","E","G","G","G"),
                     y=c("B","C","C","D","E","G","F","I","H"))
 example_vertices <- data.frame(x=c("A","B","C","D","E","F","G","H","I"))
 # Generating network
-net <- graph_from_data_frame(d=example_edges,vertices=example_vertices,directed=F) 
+net <- graph_from_data_frame(d=example_edges,vertices=example_vertices,
+                             directed=F) 
 # Plotting network
 plot(net,vertex.size=20,margin=0,edge.arrow.size=0.3,vertex.color="gray75")
 # Calculate Eigenvector Centrality of each Vertex
@@ -186,9 +187,9 @@ The primary disadvantage with Eigenvector centrality is that it's geared towards
 ###3.3 Alpha Centrality
 Alpha centrality is an advancement to Eigenvector centrality to allow the metric to be applied to directed graphs which have asymmetric adjacency matrices. Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, alpha centrality is defined as follows where e is the importance given to a vertex and alpha is a constant: 
 
-$$\vv{x} = (I-\alpha^T)^{-1}\vv{e} $$
+$$\vv{x} = (I-\alpha A^T)^{-1}\vv{e} $$
 
-Alpha centrality starts by giving every vertex a starting, random positive amount of influence. Each node splits its influence evenly and divides it amongst its outward neighbors, receieving from its inward neighbors. This process repeats until the graph reaches a steady state, perhaps through power iteration. 
+Alpha centrality begins by giving every vertex a starting random positive amount of influence. The algorithm divides the influence each node has and updates the relative influence of its outward neighbors while also receieving influence from its inward neighbors based on the alpha coefficient. As the alpha parameter decreases, the significance of a directed edge is larger in the calculation. This process repeats until the graph reaches a steady state, perhaps through power iteration. 
 
 ## 4. Analysis and Testing of the Model
 
@@ -283,12 +284,14 @@ nodes <- unique(result$`Main/From`)
 ```
 
 ```{r, echo=TRUE}
-erdos1_network <- graph_from_data_frame(d=result, vertices=nodes, directed=F) 
+erdos1_network <- graph_from_data_frame(d=result, vertices=nodes, 
+                                        directed=F) 
+erdos1_network <- simplify(erdos1_network, remove.multiple = TRUE)
 length(V(erdos1_network)) # Number of vertices in the graph
 length(E(erdos1_network)) # Number of edges in the graph
 ```
 
-We see that this network consists 474 of vertices and 3325 of edges -- it's a relatively large network. It is worth noting that our network does not contain all 511 erdos1 authors because go through our data frame and remove all the edges which are not between Erdos1 authors as instructed. 
+We see that this network consists of 474 vertices and 1663 edges -- it's a relatively large network. It is worth noting that our network does not contain all 511 erdos1 authors because go through our data frame and remove all the edges which are not between Erdos1 authors as instructed. 
 
 The first aspect of the graph we looked at is the presence of cliques. A clique is a subset of vertices where each vertex is connected to every other vertex. A simple example of a clique would be a triangle which has three vertices connected by three edges. In terms of our network, the real world meaning of a clique in our network would be a set of authors who all collaborated with each other at some point in their careers. Simply calculating the total number of cliques larger than 3 in our network returns in a data set far larger than is valuable. 
 
@@ -299,13 +302,16 @@ length(cliquesFound) # Lots of cliques of size 3 or larger
 
 However, we can also find only the largest cliques present in the graph and plot one of these largest cliques.
 
-```{r, echo=TRUE}
-biggestCliquesFound <- largest_cliques(erdos1_network) # List of biggest cliques
-length(biggestCliquesFound) # Number of largest cliques present
+```{r, echo=TRUE, fig.align="center"}
+# List of biggest cliques
+biggestCliquesFound <- largest_cliques(erdos1_network) 
+# Number of largest cliques present
+length(biggestCliquesFound) 
 # Visualizing one of the large cliques
 clique1 <- biggestCliquesFound[[1]]
 cliqueNetwork <- induced.subgraph(graph=erdos1_network,vids=clique1)
-plot(cliqueNetwork, edge.arrow.size=.01,vertex.size=1,margin=0,layout=layout_in_circle)
+plot(cliqueNetwork, edge.arrow.size=.01,vertex.size=1,margin=0,
+     layout=layout_in_circle, vertex.label.family="Helvetica")
 ```
 
 Another property of the graph which we explored was the diameter of the graph. The diamter of a graph is the longest path present in the graph. 
@@ -322,29 +328,245 @@ Edge density is also an interesting calculation relevant to our network. This is
 edge_density(erdos1_network) # Show the density calculation result
 ```
 
-Given our 3325 total edges and 474 vertices, the result of this calculation is correct. We see here that compared to the possible connectedness of the graph, the Erdos1 co-author network is fairly sparsely connected. 
+Given our 1663 total edges and 474 vertices, the result of this calculation is correct. We see here that compared to the possible connectedness of the graph, the Erdos1 co-author network is fairly sparsely connected. 
 
 The last property we considered was the clustering coefficient in the graph. The clustering coefficient measures locally how connected the vertices are. The definition of clustering is fairly fluid as clustering algorithms take several parameters, but generally speaking clustering seeks to find groups of similar vertices. 
 
 ```{r}
-transitivity(erdos1_network) # Show the clustering coefficient calculation result
+# Show the clustering coefficient calculation result
+transitivity(erdos1_network) 
 ```
 
 This number shows the probability that an author's co-authors have collaborated together. This metric also shows us how connected the vertices in the graph are, and given the lower result, we see that this probability is not high. 
 
 ###4.3 Testing the Erdos1 Co-author Network
 
+Since we created this network in the previous section, we can begin by calculating the total degree of each vertex, shown in the code segment below. 
 
-```{r, fig.width = 12, fig.height = 12}
-
+```{r}
+totalDegree <- degree(erdos1_network, v = V(erdos1_network), mode = c("all") 
+                      ,loops = TRUE, normalized = FALSE)
+head(sort(totalDegree, decreasing=TRUE))
 ```
 
+According to the total degree method, the most important authors in the Erdos1 co-author network are NOGA M. ALON, BELA BOLLOBAS, RONALD LEWIS GRAHAM, etc. We are told here that the authors who have the highest degree, or most collaborators, are the most important. However, as shown in our running example, the degree centrality doesn't necessarily give the full picture. 
+
+Next, we can calculate the eigenvector centrality, our second model, which assigns importance to an author based on the importance of the authors who they are connected with.
+
+```{r}
+eigenValues <- eigen_centrality(erdos1_network)$vector
+head(sort(eigenValues, decreasing=TRUE))
+```
+
+Based on the eigenvector centrality model, the most important Erdos1 co-authors are NOGA M. ALON, VOJTECH RODL, BELA BOLLOBAS, etc. 
+
+```{r, include=FALSE}
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(eigenValues,breaks=50))]
+```
+
+We can also create a visualization of the network where the color of each vertex represents its eigenvector centrality. The cooler the color, the lower the eigenvector centrality (red is most important, blue is least important).
+
+```{r, echo=FALSE, fig.height=10, fig.width=10, fig.cap="Eigenvector Centrality Heatmap for Erdos1 Network"}
+plot(erdos1_network, vertex.color=graphCol, edge.arrow.size=.001, edge.size=0.1,vertex.label=NA,vertex.size=2.5,margin=0)
+```
+
+We see some similarities and differences between the outputs of our two models. We look specifically at the rankings of "VOJTECH RODL" and "RONALD LEWIS GRAHAM" in the degree model vs the eigenvector model. In the degree model, Roland Lewis Grahm is considered more important or influential because he has 44 connections to other authors vs the 43 connections of Vojtech Rodl. However, the eigenvector centrality shows that Rodl is in fact the more influential figure in this network because the individuals he is connected with are themselves more influential. The code below shows that in terms of eigenvector centrality, Graham's connections are less important than Rodl's. We find Graham's and Rodl's respective neighborhoods and then take the mean of their neighbor's eigenvector centrality. 
+
+```{r}
+graham_connections <- which(names(eigenValues) %in% neighbors(erdos1_network
+                      ,"GRAHAM, RONALD LEWIS", mode = c("total"))$name) 
+# Find eigenvector centrality values for Graham neighborhood
+mean(eigenValues[graham_connections])
+
+rodl_connections <- which(names(eigenValues) %in% neighbors(erdos1_network
+                      ,"RODL, VOJTECH", mode = c("total"))$name) 
+# Find eigenvector centrality values for Rodl neighborhood
+mean(eigenValues[rodl_connections])
+```
+
+From the above output, it's clear that even though Rodl's degree is lower, his influence is larger in the network. 
+
+Alpha centrality calculation is not relevant for this network because the Erdos1 graph's edges are undirected. 
 
 ###4.4 Testing the Citation Network
 
+To build this network, we first had to manually create a csv citation data set consisting of a directed edge list. We started with the paper titled \textit{On Random Graphs} by Paul Erdos and Alfred Renyi. Using Google Scholar, we looked at all the papers which cited this work. Due to the large number of papers which cited this and subsequent papers, we decided to scale down this network. Since most of the papers on our list had between 500 and 3000 ciations, we chose to scale down the data by a factor of 500. In other words, if paper A was cited 3000 times, we award it 6 edges to the top papers which cited it. By scaling the network this way, we were able to maintain the behavior of the data in a manageable way. 
+
+```{r, include=FALSE}
+citation_edges <- read.csv("~/Desktop/School/MATH380/Modeling-With-Networks/citationNetwork.csv")
+citation_vertices <- data.frame(vertices=unique(citation_edges[,1]))
+firstVertex <- data.frame(vertices=as.character(unlist(citation_edges[1,2])))
+citation_vertices <- rbind(citation_vertices, firstVertex)
+```
+
+We create the citation network using this data in the following code.
+
+```{r}
+citation_network <- graph_from_data_frame(d=citation_edges[,1:2], 
+                      vertices=citation_vertices, directed=T) 
+length(V(citation_network)) # Number of vertices in the graph
+length(E(citation_network)) # Number of edges in the graph
+
+```
+
+We see that the citation network consists of 81 vertices and 107 edges. In this network, the vertices represent each paper, and a directed edge represents a paper citing (or being cited by) another paper. 
+
+Now, we can apply our first model to this network. The following code returns the total degree for each vertex in the network. We then sort the results in decreasing order, and display the six vertices with the highest total degree.
+
+```{r}
+total_citation_degree <- degree(citation_network, v = V(citation_network), 
+                        mode = c("all"), loops = TRUE, normalized = FALSE)
+head(sort(total_citation_degree, decreasing=TRUE))
+```
+
+According to the total degree method, \textit{The Structure and Function of Complex Networks (TSFCN)} is the most influential paper in the network, since it cites and it is cited the most times. However, as explained before, total degree does not take into consideration the influence of each citation, just the presence of one. To do this, we apply our second model which calculates eigenvector centrality for each vertex in the network, and display the top entries in decreasing order.
+
+```{r}
+eigen_values <- eigen_centrality(citation_network)$vector
+head(sort(eigen_values, decreasing=TRUE))
+```
+
+According to the eigenvector centrality, \textit{TSFCN} is also the most influential paper in the citation network. A plot for the network is provided below, where the vertices are colored based on their eigenvalues where a higher eigenvalue is mapped to a warmer color.
+
+```{r, include=FALSE}
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(eigen_values,breaks=50))]
+```
+
+```{r fig.cap="Eigenvector Centrality Heatmap for Citation Network", fig.height=10, fig.width=10, message=FALSE, warning=FALSE}
+plot(citation_network, vertex.color=graphCol, edge.arrow.size=1, 
+     edge.size=NA,vertex.label=NA,vertex.size=5,margin=0)
+```
+
+\textit{TSFCN} (shown in red) is connected to 38 papers which is the reason that it has a really large influence according to the total degree model. Because of the relative influence of these 38 papers, eigenvector centrality also finds this paper to be very important. However, we want to take into consideration the direction of these 38 edges to get a better gauge on the influence of the paper. \textit{TSFCN} has 34 papers which cited it (in degree) and 4 papers which it cites (out degree). Alpha centrality, our third model, splits the influence \textit{TSFCN} has over the four papers that it cites, giving those a higher influence. 
+
+The following code calculates the alpha centrality values for the citation network. We select the alpha parameter to be 0.5.
+
+```{r}
+citation_alpha <- alpha_centrality(citation_network, 
+    nodes = V(citation_network), alpha = 0.5, loops = FALSE)
+head(sort(citation_alpha, decreasing=TRUE))
+```
+
+According to the alpha centrality, \textit{On Random Graphs} is the most influential paper in the network. We see this paper in red reflected in figure 3. This result makes sense because of the way in which we built the citation network. We expect \textit{On Random Graphs} to be the most influential paper because it's the paper which we chose to build our network on. All papers in the network point to this work, both directly and indirectly. 
+
+```{r, include=FALSE}
+colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(5000)[as.numeric(cut(citation_alpha,breaks=5000))]
+```
+
+```{r fig.cap="Alpha Centrality Heatmap for Citation Network", fig.height=10, fig.width=10, message=FALSE, warning=FALSE}
+plot(citation_network, vertex.color=graphCol, edge.arrow.size=1, 
+     edge.size=NA,vertex.label=NA,vertex.size=5,margin=0)
+```
+
+
 ###4.5 Testing the Actors Network
 
+```{r, include=FALSE}
+movieData <- read.csv("~/Desktop/School/MATH380/Modeling-With-Networks/movie_metadata.csv")
+
+#Removing duplicate rows
+movieData <- movieData[!duplicated(movieData),]
+
+actorAList <- c()
+actorBList <- c()
+
+#For every row (movie) in the data
+for (i in 1:nrow(movieData)){
+  actors <- movieData[i,]
+  #For every name (actor) in the row
+  for (j in 1:ncol(movieData[i,])){
+    #For every other name than j in the column 
+    for (k in 1:ncol(movieData[i,])){
+      if(as.character(unlist(movieData[i,j])) != as.character(unlist(movieData[i,k]))){
+        #tempDF <- data.frame(actorA=as.character(unlist(movieData[i,j])),actorB=as.character(unlist(movieData[i,k])))
+        #actorCollabDF <- rbind(actorCollabDF, tempDF)  
+        actorAList <- c(actorAList, as.character(unlist(movieData[i,j])))
+        actorBList <- c(actorBList, as.character(unlist(movieData[i,k])))
+     }
+    }
+  }
+}
+
+#Creating the actorA - actorB dataframe
+actorCollabDF <- data.frame(actorA=actorAList, actorB=actorBList)
+
+#Igraph
+#Getting the nodes
+actorsNodes <- unique(actorCollabDF$actorA)
+
+```
+
+After importing and processing the data for this graph (omitted from our report), we begin by creating the actors collaboration network. 
+
+```{r}
+actorsNetwork <- graph_from_data_frame(d=actorCollabDF, 
+vertices=actorsNodes, directed=F)
+length(V(actorsNetwork)) # Number of vertices in the graph
+length(E(actorsNetwork)) # Number of edges in the graph
+```
+
+The number of vertices in the actor/collaborator network 6256 and the number of edges is 29286 in the actor network. Figure 4 shows a visualization of this large network.
+
+```{r, fig.height=10, fig.width=10, fig.cap="Actors Network"}
+plot(actorsNetwork, vertex.color="cornflowerblue", edge.arrow.size=.001, 
+     edge.size=0.1,vertex.label=NA,vertex.size=2,margin=0)
+```
+
+Similar to the analysis of the erdos co-author network, we start with a primary approach of determining each actor's influence: each node's degree represents that actor's influence.
+
+```{r}
+totalDegree <- degree(actorsNetwork, v = V(actorsNetwork), mode = c("all"), 
+                      loops = TRUE, normalized = FALSE)
+head(sort(totalDegree, decreasing=TRUE))
+```
+
+Our calculation suggests that Robert De Niro had collaborated with 200 actors, Morgan Freeman had collaborated with 172 other actors, etc. In this model, Mr. De Niro has the most influence within this network. 
+
+As mentioned before, total degree centrality awards one centrality point for every link a node receives, but not all vertices are equivalent. In other words: a node is connected to more nodes does not mean it has more influence. Instead, a node is important if it is linked to by other important nodes, which is eigenvector centrality's thesis.
+
+```{r}
+eigenValues <- eigen_centrality(actorsNetwork)
+head(sort(eigenValues$vector, decreasing=TRUE))
+```
+
+According to the result of our eigenvector centrality calculation, Morgan Freeman has the most influence with 1.0000000 followed by Robert De Niro with 0.9949732.
+
+```{r, include=FALSE}
+pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
+graphCol <- pal(50)[as.numeric(cut(eigenValues$vector,breaks=50))]
+```
+
+We can see that although Robert De Niro has collaborated with 28 more actors than Morgan Freeman, Morgan Freeman has a higher eigenvector centrality score which means Morgan Freeman is more influencial than Robert De Niro. To justify this result, we find Freeman's and De Niro's respective neighborhoods and then take the mean of their neighbor's eigenvector.
+
+```{r, include=FALSE}
+eigenValuesNum <- eigen_centrality(actorsNetwork)$vector
+```
+
+
+```{r}
+MorgenFreeman <- which(names(eigenValuesNum) %in% neighbors(actorsNetwork, 
+"Morgan Freeman", mode = c("total"))$name)
+# Find eigenvector centrality values for Freeman neighborhood
+mean(eigenValuesNum[MorgenFreeman])
+
+RobertDeNiro <- which(names(eigenValuesNum) %in% neighbors(actorsNetwork, 
+"Robert De Niro", mode = c("total"))$name)
+# Find eigenvector centrality values for De Niro neighborhood
+mean(eigenValuesNum[RobertDeNiro])
+```
+
+
+From this calculation, Morgan Freeman's collaborators has a higher average eigenvector centrality score, which means his collaborators, on average, are more influencial than Robert De Niro's. This results in Morgan Freeman having a higher eigenvector centrality score although he collaborated with fewer actors.
+
+Alpha centrality calculation is not relevant for this network because the Actor Collaborator graph's edges are undirected. 
+
 ## 5. Results and Quality of Model
+
+More reasoning will be present in the sections which follow, but a subset is mentioned here. The first network which we will analyze, the Erdos1 co-author network, is a simple undirected network which shows authors who have collaborated with the mathematician Paul Erdos. We can apply the total degree metric to help us determine influence of authors in this network because more collaborators will imply that an author has more influence. If a vertex (representing an author) has a higher degree, we could assume that their works are more diverse and their influence is greater. The second network which we will analyze, the citation network, is a directed network which shows academic papers which have cited each other. Our metric will also be relevant in this scenario, as a paper which has a higher degree will mean that more papers have cited it, making it more influential. The third network is a movie/actors network. Total degree has a solid meaning here too, as more connections (edges) will imply that the actor has worked with a larger number of other actors, meaning that they have more of an influence in their industry.
+
 ## 6. References
 To be completed at a later time: (APA)
 
