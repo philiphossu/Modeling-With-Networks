@@ -78,8 +78,10 @@ network <- graph_from_data_frame(d=result, vertices=nodes, directed=T)
 network
 
 # Messy plot
-plot(network, edge.arrow.size=.01,vertex.size=1,margin=0)
+plot(network, edge.arrow.size=.1,vertex.size=1,margin=0,vertex.label=NA)
 zm() # Allows us to zoom but still not really usable
+
+plot(networkUnDirected, edge.arrow.size=.1,vertex.size=1,margin=0,vertex.label=NA)
 
 # Most important authors with respect to the total degree of each node
 totalDegree <- degree(network, v = V(network), mode = c("all"), loops = TRUE, normalized = FALSE)
@@ -182,4 +184,14 @@ result <- result[-indicesToRemove,]
 # Obtaining all nodes for creation of the iGraph object
 nodes <- unique(result$`Main/From`)
 
+neighbors(networkUnDirected, "GRAHAM, RONALD LEWIS", mode = c("total"))$name
+
+eigenValues <- eigen_centrality(networkUnDirected)$vector
+test <- which(names(eigenValues) %in% neighbors(networkUnDirected, "GRAHAM, RONALD LEWIS", mode = c("total"))$name)
+head(sort(eigenValues[test], decreasing=TRUE),10)
+mean(eigenValues[test])
+
+test2 <- which(names(eigenValues) %in% neighbors(networkUnDirected, "RODL, VOJTECH", mode = c("total"))$name)
+head(sort(eigenValues[test2], decreasing=TRUE),10)
+mean(eigenValues[test2])
 
