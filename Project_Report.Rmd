@@ -197,14 +197,58 @@ Alpha centrality starts by giving every vertex a starting, random positive amoun
 Before we could test any of our influence metrics, we had to spend some significant time collecting, cleaning, and importing data into R. The raw data for the Erdos1 collaborator network (found at https://files.oakland.edu/users/grossman/enp/Erdos1.html) is a 1 column by ~19000 row document that contains one name in each row. The authors who collaborated directly with Dr. Paul Erdos have no spaces before them. Each direct collaborator is followed by a variable number of entries which begin with a set number of spaces. Each of these represent a collaborator of the direct collaborator of Erdos. We had to create an algorithm to parse this file, the pseudocode of which can be seen below:
 
 \begin{algorithmic}
-\State Initialize $c \gets 0$
-\For {$i\leq n$}
-    \State Calculate Random Coordinate $(x_i, y_i)$ such that $0\leq x_i \leq 1 \ ,\ 0\leq y_i \leq 1$
-    \If {$y_i \leq \sqrt{1-x_i^2}$}
-      \State$c \gets c+1$
+\State Initialize $currentMain \gets ""$
+      Initialize $df \gets data.frame()$ to store all the vertices
+      Initialize $con \gets file(filepath, "r")$ to read the file
+      Read the name of the first collaborator
+      $currentMain \gets readLines(con, n=1)$
+\While {$TRUE$}
+    \State Read next line 
+    $line \gets readLines(con, n=1)$ 
+    \If {$length(line) == 0$}
+      \State$break$
     \EndIf
-\EndFor
-\State \Return Estimate for $\pi = 4(c/n)$
+    \If {$line == ""$}
+      Store the name of the next collaborator in currentMain
+      \State$currentMain <- readLines(con, n=1)$
+    \EndIf
+    \Else 
+      \State
+      Create an entry with currentMain and his next collaborator
+      $currentEntry <- data.frame(currentMain, line)$
+      Appending the new entry to df
+      $df <- rbind(df, currentEntry)$
+    \EndElse
+\EndWhile
+\State Close file
+      $close(con)$
+\Return Dataframe $df$
+\end{algorithmic}
+
+\begin{algorithmic}
+\State Initialize $currentMain \gets ""$
+      Initialize $df$ to store all the vertices
+      Initialize $con \gets open(file)$ to read the file
+      Store the name of the first collaborator in currentMain
+      $currentMain \gets readLines(con)$
+\While {$(con is not empty)$}
+    \State Read next line 
+    $line \gets readLines(con)$
+    \If {$line == ""$}
+      Store the name of the next collaborator in currentMain
+      \State$currentMain <- readLines(con)$
+    \EndIf
+    \Else 
+      \State
+      Create an entry with currentMain and his next collaborator
+      $currentEntry <- data.frame(currentMain, line)$
+      Appending the new entry to df
+      $df <- rbind(df, currentEntry)$
+    \EndElse
+\EndWhile
+\State Close file
+      $close(con)$
+\Return $df$
 \end{algorithmic}
 
 To create the actual networks in R, we utilize the iGraph package available for download at http://igraph.org/r/. In order to create an igraph network object, we need to provide a two column edge list, where the first column represents the "from" vertex and the second column represents the "to" vertex. We also must create and specify a vertex list containing all of the unique vertices. Each of these data frames can have subsequent columns containing extra data about each edge/vertex like weight, etc. Given these pieces of information, we can create, visualize, and run calculations on directed and undirected networks.
