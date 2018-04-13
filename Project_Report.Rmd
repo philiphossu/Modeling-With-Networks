@@ -1,6 +1,6 @@
 ---
 title: "An Investigation Into Modeling With Networks"
-subtitle: "Math380 Spring 2018 Project - Code available at https://github.com/philiphossu/Modeling-With-Networks"
+subtitle: "Math380 Spring 2018 Project - Code available at https://github.com/philiphossu/Modeling-With-Networks  "
 output: pdf_document
 author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
 date: \today
@@ -26,7 +26,7 @@ fontsize: 11pt
 
 ## 1. Introduction
 
-Graphs are some of the most versatile and interesting structures in mathematics. A graph G is characterized as an ordered pair of vertices and edges, $G=(V(G),E(G))$. The edges in a graph imply the existence of a relationship between two vertices or objects. They can be directed (implying a relationship based on ordering) or undirected where the edges have no orientation. Edges can also be weighted, having several real world applications like distance, cost, etc. These structures evidently can represent countless applications which have discrete and related objects. A simple graph which will operate as our running example is shown below.
+Graphs are some of the most versatile and interesting structures in mathematics. A graph G is characterized as an ordered pair of vertices and edges, $G=(V(G),E(G))$. The edges in a graph imply the existence of a relationship between two vertices or objects. They can be directed (implying a relationship based on ordering) or undirected where the edges have no orientation. Edges can also be weighted, having several real world applications like distance, cost, etc. These structures evidently can represent countless applications which have discrete and related objects. A simple undirected graph which will operate as our running example is shown below.
 
 \tikzset{main node/.style={circle,draw,minimum size=1.25cm,inner sep=1pt},
 color2/.style={circle,draw,minimum size=0.65cm,inner sep=1pt,fill = blue!35}}
@@ -59,7 +59,7 @@ color2/.style={circle,draw,minimum size=0.65cm,inner sep=1pt,fill = blue!35}}
 
 Influence is the capacity to produce an effect in indirect or intangible ways. If one wants to be successful in their field, they must share their ideas and persuade their peers to accept them. This idea is present in all types of industries and specializations. A significant portion of this project focuses on the widespread influence of a famous mathematician, Paul Erdos, and his large co-author network.
 
-In the following project report, we analyze how influence can be determined in a graph and describe our exploration into mathematical modeling with networks. There exist several known measures to explore the importance of a vertex in a graph, including degree centrality, betweenness centrality, etc. We will model various networks, analyze them, find who/what has the most influence in the network, and the reasons behind this result. We seek to combine real world scenarios with some of these mathematical ideas to accurately describe the concept of influence in graphs. Furthermore we will argue how these methods can show steps to rapidly boost ones own influence.
+In the following project report, we analyze how influence can be determined in a graph and describe our exploration into mathematical modeling with networks. There exist several known measures to explore the importance of a vertex in a graph, including degree centrality, betweenness centrality, etc. We will model various networks, analyze them, find who/what has the most influence in the network, and describe the reasons behind this result. We seek to combine real world scenarios with some of these mathematical ideas to accurately describe the concept of influence in graphs. Furthermore we will argue how these methods can show steps to rapidly boost ones own influence.
 
 The prompt asked us to consider a number of specific tasks, briefly outlined below:
 
@@ -76,7 +76,7 @@ The prompt asked us to consider a number of specific tasks, briefly outlined bel
 To address the above tasks, we utilized the R programming language and our knowledge from various math and computer science courses. 
 
 ## 2. Statement and Analysis of the Problem
-While our project does have a number of specific requirements discussed in the introduction, essentially the problem we are trying to approach is how to measure and interpret the influence of a vertex within a network. We define two influence measures to address this problem, discussed in depth in the latter sections. Once these are defined, we are collect and clean multiple data sets, create multiple networks, and analyze these networks under our two metrics.
+While our project does have a number of specific requirements discussed in the introduction, essentially the problem we are trying to approach is how to measure and interpret the influence of a vertex within a network. We define three influence measures to address this problem, discussed in depth in the latter sections. Once these are defined, we are collect and clean multiple data sets, create multiple networks, and analyze these networks under the applicable metrics.
 
 While the field of graph theory is certainly not young, we noticed a wealth of more recent works geared towards our topic and general social network analysis. We began by finding a modern survey of various graph centrality measures, notably the work by Bloch, et al. titled \textit{Centrality Measures in Networks} [CITE]. Rather than focusing on a concrete example, this work provides a much needed overview of several fundamental graph measurements and their properties. This publication helped us determine what different types of graph metrics exist and how they are calculated. This was not the only publication which we considered to help us learn about various graph metrics. The work by Santiago Segarra and Alejandro Ribeiro titled \textit{Stability and Continuity of Centrality Measures in Weighted Graphs} gave us an insight into some of the advantages and disadvantages of metrics like Eigenvector centrality and Betweenness centrality [CITE].
 
@@ -191,6 +191,130 @@ $$x = (I-\alpha^T)^{-1}e $$
 Alpha centrality starts by giving every vertex a starting, random positive amount of influence. Each node splits its influence evenly and divides it amongst its outward neighbors, receieving from its inward neighbors. This process repeats until the graph reaches a steady state, perhaps through power iteration. 
 
 ## 4. Analysis and Testing of the Model
+
+###4.1 Aside: Data Cleaning & Network Creation Using iGraph Package
+
+Before we could test any of our influence metrics, we had to spend some significant time collecting, cleaning, and importing data into R. The raw data for the Erdos1 collaborator network (found at https://files.oakland.edu/users/grossman/enp/Erdos1.html) is a 1 column by ~19000 row document that contains one name in each row. The authors who collaborated directly with Dr. Paul Erdos have no spaces before them. Each direct collaborator is followed by a variable number of entries which begin with a set number of spaces. Each of these represent a collaborator of the direct collaborator of Erdos. We had to create an algorithm to parse this file, the pseudocode of which can be seen below:
+
+\begin{algorithmic}
+\State Initialize $c \gets 0$
+\For {$i\leq n$}
+    \State Calculate Random Coordinate $(x_i, y_i)$ such that $0\leq x_i \leq 1 \ ,\ 0\leq y_i \leq 1$
+    \If {$y_i \leq \sqrt{1-x_i^2}$}
+      \State$c \gets c+1$
+    \EndIf
+\EndFor
+\State \Return Estimate for $\pi = 4(c/n)$
+\end{algorithmic}
+
+To create the actual networks in R, we utilize the iGraph package available for download at http://igraph.org/r/. In order to create an igraph network object, we need to provide a two column edge list, where the first column represents the "from" vertex and the second column represents the "to" vertex. We also must create and specify a vertex list containing all of the unique vertices. Each of these data frames can have subsequent columns containing extra data about each edge/vertex like weight, etc. Given these pieces of information, we can create, visualize, and run calculations on directed and undirected networks.
+
+In the following sections we focus primarily on describing the results of our testing. However, our full code can be found at https://github.com/philiphossu/Modeling-With-Networks. 
+
+###4.2 Exploring the Erdos1 Co-author Network
+#CHANGE THE HEADERS ON THIS CODE SEGMENT BEFORE RUNNING 
+
+Here, we create the Erdos1 co-author network after cleaning and importing the data. This network makes the most sense to be undirected since the data which we have only shows some form of collaboration between authors. Prior to testing our metrics on this network, we explore some of the interesting properties of this network as suggested in the project requirements. 
+
+```{r, eval=FALSE, include=FALSE}
+processFile = function(filepath) {
+  # Current Main represents the Erdos1 collaborator
+  currentMain <- ""
+  df <- data.frame()
+  con = file(filepath, "r")
+  # Open file, read first main collaborator
+  line = readLines(con, n = 1)
+  words <- strsplit(line, " ")[[1]]
+  temp <- gsub('[0-9:* \"]+', '', words)
+  currentMain <- paste(words <- temp[which(temp != '')], collapse = ' ')
+  
+  while (TRUE) {
+    line = readLines(con, n = 1)
+    # print(line)
+    # If EOF, break
+    if (length(line) == 0) {
+      break
+    }
+    # If empty line, read next main collaborator
+    if (line == ''){
+      line = readLines(con, n = 1)
+      words <- strsplit(line, " ")[[1]]
+      temp <- gsub('[0-9:* \"]+', '', words)
+      currentMain <- paste(words <- temp[which(temp != '')], collapse = ' ')
+    } else{
+      # Record Erdos2 collaborators and their corresponding main collaborator
+      words <- strsplit(line, " ")[[1]]
+      temp <- gsub('[0-9:* \"]+', '', words)
+      words <- paste(words <- temp[which(temp != '')], collapse = ' ')
+      currentDF <- data.frame(currentMain,words)
+      df <- rbind(df,currentDF)
+    }
+  }
+  close(con)
+  # df column 1 = main collaborators (from), column 2 = secondary collaborators (to)
+  return(df)
+}
+result <- processFile("~/Desktop/School/MATH380/Modeling-With-Networks/erdos1data.csv")
+colnames(result) <- c("Main/From", "Secondary/To")
+
+uniqueE1People <- unique(result$`Main/From`)
+
+# Now we need to go through our data frame and remove all the edges which are not between Erdos1 authors
+a <- 1
+indicesToRemove <- c()
+for(a in 1:nrow(result)){
+  #print(result[a])
+  if(!(result[a,2] %in% uniqueE1People)){
+    indicesToRemove <- c(indicesToRemove,a)
+  }
+}
+
+# indicesToRemove contains the edges which we don't care about, Erdos2 authors, removing them here
+result <- result[-indicesToRemove,]
+# Obtaining all nodes for creation of the iGraph object
+nodes <- unique(result$`Main/From`)
+```
+
+```{r, eval=FALSE, include=FALSE}
+erdos1_network <- graph_from_data_frame(d=result, vertices=nodes, directed=F) 
+length(V(erdos1_network)) # Number of vertices in the graph
+length(E(erdos1_network)) # Number of edges in the graph
+```
+
+We see that this network consists 474 of vertices and 3325 of edges -- it's a relatively large network. It is worth noting that our network does not contain all 511 erdos1 authors because go through our data frame and remove all the edges which are not between Erdos1 authors as instructed. 
+
+The first aspect of the graph we looked at is the presence of cliques. A clique is a subset of vertices where each vertex is connected to every other vertex. A simple example of a clique would be a triangle which has three vertices connected by three edges. In terms of our network, the real world meaning of a clique in our network would be a set of authors who all collaborated with each other at some point in their careers. Simply calculating the total number of cliques larger than 3 in our network returns in a data set far larger than is valuable. 
+
+```{r, eval=FALSE, include=FALSE}
+cliquesFound <- cliques(erdos1_network, min = 3, max = NULL) 
+length(cliquesFound) # Lots of cliques of size 3 or larger
+```
+
+However, we can also find only the largest cliques present in the graph and plot one of these largest cliques.
+
+```{r, eval=FALSE, include=FALSE}
+biggestCliquesFound <- largest_cliques(erdos1_network) # List of the biggest cliques in the network
+length(biggestCliquesFound) # Number of largest cliques present
+# Visualizing one of the large cliques
+clique1 <- biggestCliquesFound[[1]]
+cliqueNetwork <- induced.subgraph(graph=erdos1_network,vids=clique1)
+plot(cliqueNetwork, edge.arrow.size=.01,vertex.size=1,margin=0,layout=layout_in_circle)
+```
+
+
+
+###4.3 Testing the Erdos1 Co-author Network
+
+
+```{r, fig.width = 12, fig.height = 12}
+
+```
+
+
+###4.4 Testing the Citation Network
+
+###4.5 Testing the Actors Network
+
 ## 5. Results and Quality of Model
 ## 6. References
 To be completed at a later time: (APA)
