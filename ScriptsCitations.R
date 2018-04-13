@@ -16,17 +16,17 @@ citationNetwork <- graph_from_data_frame(d=citationEdges[,1:2], vertices=citatio
 citationNetwork
 
 #Plotting the network 
-plot(citationNetwork, edge.arrow.size=.01,vertex.size=1,margin=0, vertex.label=NA)
+plot(citationNetwork, edge.arrow.size=0.3,vertex.size=1,margin=0, vertex.label=NA)
 zm()
 
 #Alpha centrality
-citationAlpha <- alpha_centrality(citationNetwork, nodes = V(citationNetwork), alpha = 0.9, loops = FALSE, exo = 1)
+citationAlpha <- alpha_centrality(citationNetwork, nodes = V(citationNetwork), alpha = 0.5, loops = FALSE, exo = 1)
 
 sort(citationAlpha)
 
 pal <- colorRampPalette(c("blue","green","yellow","orange","red"))
 graphCol <- pal(5000)[as.numeric(cut(citationAlpha,breaks=5000))]
 
-plot(citationNetwork, vertex.color=graphCol, edge.arrow.size=.001, edge.size=NA,vertex.label=NA,vertex.size=1,margin=0)
+plot(citationNetwork, vertex.color=graphCol, edge.arrow.size=.1, edge.size=NA,vertex.labels=NA,vertex.size=5,margin=0)
 zm()
 
