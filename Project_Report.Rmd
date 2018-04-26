@@ -1,7 +1,9 @@
 ---
 title: "An Investigation Into Modeling With Networks"
 subtitle: "Math380 Spring 2018 Project - Code available at https://github.com/philiphossu/Modeling-With-Networks  "
-output: pdf_document
+output:
+  pdf_document:
+    toc: true
 author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
 date: \today
 header-includes:
@@ -16,6 +18,98 @@ header-includes:
    - \usepackage{esvect}
 geometry: margin=1in
 fontsize: 12pt
+
+references:
+- id: Bloch2016
+  title: Centrality Measures in Networks
+  author:
+  - family: Bloch
+    given: Francis
+  - family: Jackson
+    given: Matthew
+  container-title: SSRN Electronic Journal
+  URL: 'http://dx.doi.org/10.2139/ssrn.2749124'
+  type: article
+  issued:
+    year: 2016
+
+- id: Segarra2015
+  title: Stability and Continuity of Centrality Measures in Weighted Graphs
+  author:
+  - family: Segarra
+    given: Santiago
+  - family: Ribeiro
+    given: Alejandro
+  container-title: IEEE Transactions on Signal Processing
+  URL: 'https://doi.org/10.1109/TSP.2015.2486740'
+  volume: 64
+  issue: 3
+  publisher: IEEE Signal Processing Society
+  type: article-journal
+  issued:
+    year: 2015
+
+- id: Karwa2016
+  title: Coauthorship and citation networks for statisticians (Comment)
+  author:
+  - family: Karwa
+    given: Vishesh
+  - family: Petrović
+    given: Sonja
+  container-title: arXiv Archives
+  URL: 'https://arxiv.org/abs/1608.06667'
+  type: article
+  issued:
+    year: 2016
+
+- id: OscaLluch2009
+  title: Co-authorship and citation networks in Spanish history of science research
+  author:
+  - family: Osca-Lluch
+    given: Julia
+  - family: Velasco
+    given: Elena
+  - family: López
+    given: Mayte
+  - family: Haba
+    given: Julia
+  container-title: Scientometrics
+  URL: 'https://doi.org/10.1007/s11192-008-2089-5'
+  volume: 80
+  issue: 2
+  publisher: Springer Netherlands
+  type: article-journal
+  issued:
+    year: 2009
+    
+- id: Bonacich2001
+  title: Eigenvector-like measures of centrality for asymmetric relations
+  author:
+  - family: Bonacich
+    given: Phillip
+  - family: Paulette
+    given: Elena
+  container-title: Social Networks
+  URL: 'https://doi.org/10.1016/S0378-8733(01)00038-7'
+  volume: 23
+  issue: 3
+  type: article-journal
+  issued:
+    year: 2001
+    
+- id: Ruhnau2000
+  title: Eigenvector-centrality — a node-centrality?
+  author:
+  - family: Ruhnau
+    given: Britta
+  container-title: Social Networks
+  URL: 'https://doi.org/10.1016/S0378-8733(00)00031-9'
+  volume: 22
+  issue: 4
+  type: article-journal
+  issued:
+    year: 2000
+
 ---
 \allowdisplaybreaks
 
@@ -78,11 +172,11 @@ To address the above tasks, we utilized the R programming language and our knowl
 ## 2. Statement and Analysis of the Problem
 While our project does have a number of specific requirements discussed in the introduction, essentially the problem we are trying to approach is how to measure and interpret the influence of a vertex within a network. We define three influence measures to address this problem, discussed in depth in the latter sections. Once these are defined, we are collect and clean multiple data sets, create multiple networks, and analyze these networks under the applicable metrics.
 
-While the field of graph theory is certainly not young, we noticed a wealth of more recent works geared towards our topic and more general social network analysis. We began by finding a modern survey of various graph centrality measures, notably the work by Bloch, et al. titled \textit{Centrality Measures in Networks} [CITE]. Rather than focusing on a concrete example, this work provides a much needed overview of several fundamental graph measurements and their properties. This publication helped us determine what different types of graph metrics exist and how they are calculated. This was not the only publication which we considered to help us learn about various graph metrics. The work by Segarra and Ribeiro titled \textit{Stability and Continuity of Centrality Measures in Weighted Graphs} gave us an insight into some of the advantages and disadvantages of metrics like Eigenvector centrality and Betweenness centrality [CITE].
+While the field of graph theory is certainly not young, we noticed a wealth of more recent works geared towards our topic and more general social network analysis. We began by finding a modern survey of various graph centrality measures, notably the work titled \textit{Centrality Measures in Networks} [-@Bloch2016]. Rather than focusing on a concrete example, this work provides a much needed overview of several fundamental graph measurements and their properties. This publication helped us determine what different types of graph metrics exist and how they are calculated. This was not the only publication which we considered to help us learn about various graph metrics. The work by Segarra and Ribeiro titled \textit{Stability and Continuity of Centrality Measures in Weighted Graphs} gave us an insight into some of the advantages and disadvantages of metrics like Eigenvector centrality and Betweenness centrality [-@Segarra2015].
 
-Another work which we used to help shape our understanding of the problem was the comment released by Karwa and Petrovic titled \textit{Coauthorship and citation networks for statisticians} [CITE]. This paper looks directly at how co-author networks and citation networks can be analyzed which is very relevant to our project. Regrettably, the networks and paper which Karwa and Petrovic are commenting on are more advanced than what we are able to make. Consequently, their analysis is also more advanced. As we will discuss, our Erdos1 co-author network is slightly oversimplified. An edge in our network simply implies the presence of these two authors collaborating at least once, but the exact number is unknown. We not able to give weights to our edges since our data set simply shows some form of collaboration. Regardless, we were able to take a number of pointers from this paper. For a complex network, the paper suggests that a metric like counting the degree of each node is far too simple. For our simple network, such a measure may be more appropriate. 
+Another work which we used to help shape our understanding of the problem was the comment released by Karwa and Petrovic titled \textit{Coauthorship and citation networks for statisticians} [-@Karwa2016]. This paper looks directly at how co-author networks and citation networks can be analyzed which is very relevant to our project. Regrettably, the networks and paper which Karwa and Petrovic are commenting on are more advanced than what we are able to make. Consequently, their analysis is also more advanced. As we will discuss, our Erdos1 co-author network is slightly oversimplified. An edge in our network simply implies the presence of these two authors collaborating at least once, but the exact number is unknown. We not able to give weights to our edges since our data set simply shows some form of collaboration. Regardless, we were able to take a number of pointers from this paper. For a complex network, the paper suggests that a metric like counting the degree of each node is far too simple. For our simple network, such a measure may be more appropriate. 
 
-A number of publications also exist which analyze specific co-author networks. One such work is \textit{Co-authorship and citation networks in Spanish history of science research} by Osca-Lluch, et al [CITE]. The author's data allows them to look at papers published by various journals, number of papers published by Spanish scientists over time, types of publications, etc. While we did not have this type of data readily accessible, the paper also looks at co-author collaboration and the impact of these publications. The paper interestingly notes that a very high percentage of authors have no collaboration whatsoever. They create a visualization of their graph where the thickness of each edge represent number of collaborations between two authors. To analyze the impact of a publication, the authors weigh in on using a quantitative measurement vs a qualitative one. They argue that a qualitative approach can be effective due to its ability to take into consideration the expertise, reach, and prestige of a researcher and their written work separately from the journal which they published in. 
+A number of publications also exist which analyze specific co-author networks. One such work is \textit{Co-authorship and citation networks in Spanish history of science research} by Osca-Lluch, et al [-@OscaLluch2009]. The author's data allows them to look at papers published by various journals, number of papers published by Spanish scientists over time, types of publications, etc. While we did not have this type of data readily accessible, the paper also looks at co-author collaboration and the impact of these publications. The paper interestingly notes that a very high percentage of authors have no collaboration whatsoever. They create a visualization of their graph where the thickness of each edge represent number of collaborations between two authors. To analyze the impact of a publication, the authors weigh in on using a quantitative measurement vs a qualitative one. They argue that a qualitative approach can be effective due to its ability to take into consideration the expertise, reach, and prestige of a researcher and their written work separately from the journal which they published in. 
 
 Despite that our networks were based on much more simple data sets, it was interesting and useful to see how others have approached similar analyses of co-author and citation networks. This problem is not totally novel, but it's apparently getting increasing amounts of attention, as we were able to find several publications referencing co-author and citation networks in the last 10 to 15 years. 
 
@@ -151,7 +245,7 @@ From this adjacency matrix, we can confirm the total degree counts of each verte
 We selected the total degree metric metric due to its simplicity and relevance in the example networks which we will consider. However, this metric doesn't always give a full picture of the influence in a network. 
 
 ###3.2 Eigenvector Centrality
-The eigenvector centrality of a vertex in network is a more advanced measurement which can help determine influence of a vertex. While this measurement also suggests that the importance of a vertex depends on the vertices it is directly connected to, it adds a layer of complexity. Rather than considering the number of incident edges to a vertex, eigenvector centrality suggests that the importance of a vertex is relative to the importance of the vertices it is connected with [CITE]. 
+The eigenvector centrality of a vertex in network is a more advanced measurement which can help determine influence of a vertex. While this measurement also suggests that the importance of a vertex depends on the vertices it is directly connected to, it adds a layer of complexity. Rather than considering the number of incident edges to a vertex, eigenvector centrality suggests that the importance of a vertex is relative to the importance of the vertices it is connected with [@Ruhnau2000]. 
 
 This metric is based on the general eigenvector problem, defined as follows: The eigenvalues and eigenvectors of a square mxm matrix are the scalar values $\lambda$ and vectors $\vv{x}$ respectively that are the solutions to:
 
@@ -182,14 +276,14 @@ sort(EGvals, decreasing=TRUE)
 
 Eigenvector centrality has several advantages over using a more simple approach like the total degree of a vertex. A vertex having many incident edges doesn't necessarily have a higher eigenvector centrality, which differs from total degree centrality and arguably more accurately measures the importance (influence) of nodes. We can see in the above example that using eigenvector centrality, the importance of the nodes is different from the degree approach. Even though vertices D and H both have degree 1, eigenvector centrality acknowledges that D is the more important vertex because it's connected to C which is is also a more important vertex in the graph. Eigenvector centrality recognizes that vertices in an interconnected component are more important than vertices which are weakly connected. We also see that even though E has a degree of 2 compared with the degree 4 of G, eigenvector centrality finds E to be the more important vertex because it is connected to very important components.   
 
-The primary disadvantage with Eigenvector centrality is that it's geared towards undirected graphs which consequently have symmetric adjacency matrices. Eigenvector centrality is very applicable to our undirected network scenarios like the Erdos1 network and the actor collaboration network. However, when it comes to the citation network, we will use a third metric to determine the influence of a node. [CITE]
+The primary disadvantage with Eigenvector centrality is that it's geared towards undirected graphs which consequently have symmetric adjacency matrices. Eigenvector centrality is very applicable to our undirected network scenarios like the Erdos1 network and the actor collaboration network. However, when it comes to the citation network, we will use a third metric to determine the influence of a node. 
 
 ###3.3 Alpha Centrality
-Alpha centrality adds a new consideration to Eigenvector centrality to allow the metric to be applied to directed graphs which have asymmetric adjacency matrices. Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, alpha centrality is defined as follows where e is the importance given to a vertex and alpha is a constant: 
+Alpha centrality adds a new consideration to Eigenvector centrality to allow the metric to be applied to directed graphs which have asymmetric adjacency matrices [@Bonacich2001]. Given a graph $G=(V(G),E(G))$ and its corresponding adjacency matrix A, alpha centrality is defined as follows where e is the importance given to a vertex and alpha is a constant: 
 
 $$\vv{x} = (I-\alpha A^T)^{-1}\vv{e} $$
 
-Alpha centrality begins by giving every vertex a starting random positive amount of influence. The algorithm divides the influence each node has and updates the relative influence of its outward neighbors while also receieving influence from its inward neighbors based on the alpha coefficient. As the alpha parameter decreases, the significance of a directed edge is larger in the calculation. This process repeats until the graph reaches a steady state, perhaps through power iteration [CITE]. Once this is achieved, we are returned the relative ranks of the vertices in the graph based on their centrality scores. 
+Alpha centrality begins by giving every vertex a starting random positive amount of influence. The algorithm divides the influence each node has and updates the relative influence of its outward neighbors while also receieving influence from its inward neighbors based on the alpha coefficient. As the alpha parameter decreases, the significance of a directed edge is larger in the calculation. This process repeats until the graph reaches a steady state, perhaps through power iteration. Once this is achieved, we are returned the relative ranks of the vertices in the graph based on their centrality scores. 
 
 ## 4. Analysis and Testing of the Model
 
@@ -390,7 +484,7 @@ Alpha centrality calculation is not relevant for this network because the Erdos1
 
 ###4.4 Testing the Citation Network
 
-To build this network, we first had to manually create a csv citation data set consisting of a directed edge list. We started with the paper titled \textit{On Random Graphs} by Paul Erdos and Alfred Renyi. Using Google Scholar, we looked at all the papers which cited this work. Due to the large number of papers which cited this and subsequent papers, we decided to scale down this network. Since most of the papers on our list had between 500 and 3000 ciations, we chose to scale down the data by a factor of 500. In other words, if paper A was cited 3000 times, we award it 6 edges to the top papers which cited it. By scaling the network this way, we were able to maintain the behavior of the data in a manageable way. 
+To build this network, we first had to manually create a csv citation data set consisting of a directed edge list. We started with the paper titled \textit{On Random Graphs} by Paul Erdos and Alfred Renyi. Using Google Scholar, we looked at all the papers which cited this work. Due to the large number of papers which cited this and subsequent papers, we decided to scale down this network. Since many of the papers on our list had between 500 and 3000 ciations, we chose to scale down the data by a factor of 500. In other words, if paper A was cited 3000 times, we award it 6 edges to the top papers which cited it. By scaling the network this way, we were able to maintain the behavior of the data in a manageable way. The data set which we created is available in the included citationNetwork.csv file. 
 
 ```{r, include=FALSE}
 citation_edges <- read.csv("~/Desktop/School/MATH380/Modeling-With-Networks/citationNetwork.csv")
@@ -498,7 +592,7 @@ actorsNodes <- unique(actorCollabDF$actorA)
 
 ```
 
-After importing and processing the data for this graph (omitted from our report), we begin by creating the actors collaboration network. 
+After importing and processing the data for this graph (omitted from our report), we begin by creating the actors collaboration network. The data we used is available at https://www.kaggle.com/sudheersankar/movie-metadata/data. This is a sizeable data set which contains entries about various modern movies. We clean this data to focus on just the actors who are collaborating in a certain film, though the data contains other potentially interesting data about critic ratings, Facebook likes, etc. which could be utilized in further analysis. 
 
 ```{r}
 actorsNetwork <- graph_from_data_frame(d=actorCollabDF, 
@@ -565,9 +659,9 @@ Alpha centrality calculation is not relevant for this network because the Actor 
 ## 5. Results and Quality of the Models
 
 ###5.1 Discussion on Erdos Co-author Network
-Our entire analysis of this network relies on the assumption that an authors influence can be determined by who they have collaborated with. We applied the total degree model and the eigenvector centrality model to the Erdos1 co-author network. As previously shown, both models provided meaningful results. The authors which they selected to be most influential somewhat overlapped, but the order in which these authors were ranked changed slightly. This change in rank is due to the different calculations and assumptions which each model performs to determine influence. 
+Our entire analysis of this network relies on the assumption that an authors influence can be determined by who they have collaborated with. We applied the total degree model and the eigenvector centrality model to the Erdos1 co-author network. As previously shown, both models produced meaningful results. The authors which the models have selected to be most influential somewhat overlapped, but the order in which these authors were ranked changed slightly. This change in rank is due to the different calculations and assumptions which each model performs to determine influence. 
 
-The total degree model is primarily strong in terms of simplicity of computation and interpretation. The results simply show how many edges are adjacent to each vertex and we ordered these in descending order to see the most important authors by this metric. In the context of the total degree method, an author who has more co-authors arguably has more influence on his/her circle because of the increased number of interactions with researchers who could be from different fields, backgrounds, nationalities, etc. However, the strength for this model can also arguably be its weakness. The assumption that more collaborators implies more influence may be an oversimplification of the real scenario. If an author collaborates 100 times with authors who only end up writing one academic work in their lives, this is arguably not as influential as an author who collaborated 50 times with well known academics. 
+The total degree model is primarily strong in terms of simplicity of computation and interpretation. The results simply show how many edges are adjacent to each vertex and we ordered these in descending order to see the most important authors. In the context of the total degree method, an author who has more co-authors arguably has more influence on his/her circle because of the increased number of interactions with researchers who could be from different fields, backgrounds, nationalities, etc. However, the strength for this model can also arguably be its weakness. The assumption that more collaborators implies more influence may be an oversimplification of the real scenario. If an author collaborates 100 times with authors who only end up writing one academic work in their lives, this is arguably not as influential as an author who collaborated 50 times with well known academics. 
 
 Eigenvector centrality addresses this dilemma in a way which is applicable to our undirected co-author network. The advantage of this method is to take into consideration the importance of an author's collaborators when assigning influences. However, the complex computation in this method makes the results more difficult to interpret. The actual values resulting from the eigenvector centrality computation don't have much meaning in terms of the application. We know the result consists of numbers between 0 and 1, but all they tell us is the relative importance rankings of the authors. While this is the question we sought to answer, we get less supporting information and have to perform further analysis to determine why these rankings were assigned. This is in contrast to the clear results of the total degree model which simply returns the number of collaborators an author had.
 
@@ -582,21 +676,20 @@ To be completed
 ###5.4 Overall Conclusions
 To be completed
 
-## 6. References
-To be completed (APA)
+## 6. Future Work
+While our project covers three models for influence in a static snapshot of a network, an additional interesting investigation would be to see how accurate our influence metrics are for predicting future states of a network. Take for example our paper citation network. We determined that of our models, alpha centrality is the most comprehensive metric for determining influence of an academic work. Given more time and resources, it would be interesting to do the following: 
+\begin{enumerate}
+\item Create a larger scale citation network
+\item Run models on the network
+\item After some time has passed (perhaps a year) create an updated version of the network, adding the new papers which have been written and cited already present papers in the network
+\item Re-run metrics on the updated network
+\end{enumerate}
+Performing the above process would give us some interesting insight into how effective our centrality measures were in predicting the future behavior of a graph of this kind. Could we treat alpha centrality or eigenvector centrality as a sort of probability of a new edge being attached to that vertex in the next state of the graph? Intiutively we may assume that there is a relationship, but further testing and analysis would be required to have concrete evidence of this. 
 
-Paper about calculating eigenvector centrality, why this measurement is stable, etc: https://arxiv.org/pdf/1410.5119.pdf
+Another interesting future project would be to analyze networks which have more complex attributes. In many of our networks, we are analyzing simple edges and vertices. However, the presence of more advanced metadata in terms of the edges and vertices could reveal interesting properties of the graphs and/or shortcomings of our models. We may be able to further validate the results of our graphs given a more in depth data set. 
 
-Paper with a whole bunch of graph metrics and explanation about them: https://arxiv.org/pdf/1608.05845.pdf
-
-Paper about analyzing a co-author network of Spanish scientists: https://link.springer.com/article/10.1007/s11192-008-2089-5
-
-Paper with IIT author regarding co-author and citation networks: https://arxiv.org/pdf/1608.06667.pdf 
-
-Paper about why eigenvector is not good for directed and definition of alpha centrality
-http://www.leonidzhukov.net/hse/2016/networks/papers/bonacich2001.pdf 
+A final future goal would be to use the knowledge which we have gained from this project (and potentially a future course on graph theory) to build an original model to define influence in a network. Our report contains a comprehensive analysis of three leading approaches, but it would be interesting to revisit this problem given more experience and develop our own influence metric.
 
 
-## 7. Appendix
 
-Don't think we have anything applicable for this section, will likely remove header. 
+## References
