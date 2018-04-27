@@ -203,7 +203,7 @@ A number of publications also exist which analyze specific co-author networks. O
 
 Despite that our networks were based on much more simple data sets, it was interesting and useful to see how others have approached similar co-author and citation networks. This problem is not totally novel, but it's apparently getting increasing amounts of attention, as we were able to find several publications referencing co-author and citation networks in the last 10 to 15 years. 
 
-## 3. Description of the Model
+## 3. Description of the Models
 We selected three primary models by which to determine influence in a graph. While these metrics are not entirely novel, we explain their formulation both mathematically and conceptually. 
 
 ###3.1 Total Degree
@@ -308,7 +308,7 @@ $$\vv{x} = (I-\alpha A^T)^{-1}\vv{e} $$
 
 Alpha centrality begins by giving every vertex a starting random positive amount of influence. The algorithm divides the influence of each node and updates the relative influence of its outward neighbors while also receiving influence from its inward neighbors based on the alpha coefficient. As the alpha parameter decreases, the significance of a directed edge is larger in the calculation. This process repeats until the graph reaches a steady state, through power iteration. Once this is achieved, we are returned the relative ranks of the vertices in the graph based on their centrality scores. 
 
-## 4. Analysis and Testing of the Model
+## 4. Analysis and Testing of the Models
 
 ###4.1 Aside: Data Cleaning & Network Creation Using iGraph Package
 
