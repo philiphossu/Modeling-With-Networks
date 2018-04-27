@@ -4,6 +4,7 @@ subtitle: "Math380 Spring 2018 Project - Code available at https://github.com/ph
 output:
   pdf_document:
     toc: true
+    toc_depth: 3
 author: "Philip Hossu, Paolo Ratti Tamayo, Jiateng Sun"
 date: \today
 header-includes:
@@ -721,7 +722,10 @@ The total degree model definition of influence is simple -- the more times an ac
 
 To solve these problems we applied the the eigenvector centrality model. In this model, the definition of influence is more sensible to the real world -- the more influential an actor's collaborators are, the more influential that actor is. Eigenvector centrality distributes influence among nodes through edges.
 
-###5.4 Overall Conclusions
+###5.4 Applying Influence Metrics to Real World Decisions
+One final discussion to consider is that of taking our influence metrics and applying them to real life decision scenarios. It’s apparent that networks can model several real-world scenarios, from trade between countries to investment in a network of banks to even co-author networks such as the Erdos1 co-author network we presented and analyzed. Additionally, a measurement of influence in a network could certainly make an impact on decision making in the real world. Consider some the takeaways from the Total Degree Model vs the Eigenvector Centrality model in our Erdos1 network. If an individual wanted to increase their academic influence in their field, they would focus on collaborating with other influential authors, rather than simply writing as many papers as they could. Similarly, if an up-and-coming actor wanted to increase their influence in Hollywood, they would want to have their agent set up a film with a big-name actor rather than multiple films with smaller actors. Evidently, neither of these goals are trivial in practice, but these examples show the need of effective models that can measure influence in a network.
+
+###5.5 Overall Conclusions
 Overall, the total degree model is an intuitive approach for a simple network. It has the simplest output to understand, as the degree of each vertex is easily relatable to the real world scenario which the network models. However, this approach fails to deliver meaningful results on more complex networks. This is because influence does not simply depend on the direct number of connections in a neighborhood. Rather, we must consider the influence of each neighbor, and the eigenvector centrality model shows this. We illustrate this through our example analysis of the Erdos1 co-author network and the Authors/Collaboration network. However, when considering a directed graph, the alpha centrality model provides the most meaningful results. This is demonstrated through our testing of the academic paper citation network. 
 
 ## 6. Future Work
